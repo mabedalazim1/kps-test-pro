@@ -1,17 +1,29 @@
 const express = require('express');
 const router = express.Router()
+const { authJwt } = require("../middleware");
+
+const testAdmin = [authJwt.verifyToken, authJwt.isAdmin] 
 
 module.exports = function mainRout(model, url) {
+    router.use(testAdmin)
     const modleName = url.substring(1)
     router
         .route(url)
         .get((req, res) => {
+          
             model.findAll().then(data => {
                 if (data.length === 0) {
                     res.status(204).json({ msg: "No Content" })
                     
                 }
-                else  res.status(200).json(data)
+                else {
+                    const total = data.length
+                    res.set({
+                        'X-Total-Count': total,
+                        'Access-Control-Expose-Headers': 'X-Total-Count'
+                      })
+                    res.status(200).json(data)
+                }
             }).catch(err => {
                 res.status(500).json({ error: err })
                 console.log("Erorr", err)
@@ -20,6 +32,7 @@ module.exports = function mainRout(model, url) {
             let body = req.body
             model.create(body).then(data => {
                 res.status(201).json(data)
+                console.log(data)
             }).catch(err => {
                 res.status(500).json({ msg: "Cann't add this item", error: err })
             })
@@ -54,6 +67,7 @@ module.exports = function mainRout(model, url) {
             }).then(num => {
                 if (num == 1) {
                     res.send({
+                        id:id,
                         message: `${modleName} was updated successfully.`,
                         num
                     })

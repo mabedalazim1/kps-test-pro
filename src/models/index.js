@@ -5,6 +5,7 @@ const ImgCatogeryModel = require('./imageCatogery.model');
 const ImgSectionModel = require('./imageSection.model');
 const UserModel = require('./user.model');
 const RoleModel = require('./role.model');
+const CountModel = require('./count.model');
 const initial = require('../controllers/initialData');
 
 // Create Models
@@ -12,6 +13,7 @@ const ImageData = ImageDataModel(db,Sequelize);
 const ImagCatogery = ImgCatogeryModel(db,Sequelize);
 const ImageSection = ImgSectionModel(db, Sequelize);
 const User = UserModel(db,Sequelize);
+const Count = CountModel(db,Sequelize);
 const Role = RoleModel(db, Sequelize);
 const UserRole = db.define('user_role');
 
@@ -50,6 +52,7 @@ const dataModels = {
   Role,
   ROLES,
   UserRole,
+  Count,
   creatSqlData,
   initial,
 }

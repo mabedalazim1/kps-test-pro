@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-
+const path = require('path')
 global.__basedir = __dirname;
 
 // bodyParser application/json
@@ -14,11 +14,6 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan('dev'));
 
-// Const All Routes
-const header = require("./src/routes/header");
-const initRoutes = require("./src/routes");
-header(app);
-initRoutes(app);
 
 // Auth Router
 require('./src/routes/auth.routes')(app);
@@ -26,27 +21,29 @@ require('./src/routes/auth.routes')(app);
 // User Router
 require('./src/routes/user.routes')(app);
 
+// Static Files
+app.use('/api', express.static(path.join(__dirname, 'public')))
+
+// Const All Routes
+const header = require("./src/routes/header");
+const initRoutes = require("./src/routes");
+
+header(app);
+initRoutes(app);
+
+
+
 // CURD Routers
 const curdRrouter = require("./src/routes/curdRouter");
 app.use('/api/', curdRrouter.imagesection );
 app.use('/api/', curdRrouter.imageCatogery);
 app.use('/api/', curdRrouter.imageData);
 
+
 // Const Port
 const port = process.env.PORT || 8080
 
-app.get('/api', (req, res) => {
-    res.send(`<h1
-        style="margin: auto;
-        text-align: center;
-        padding-top: 30px;
-        color:blue; ">
-        KPS School Test API
-      </h1>`)
-})
-
 // Sequelize
-
 const db = require('./config/database');
 const sql = require('./src/models');
 const modifaySequelize = async () => {
@@ -61,20 +58,20 @@ const modifaySequelize = async () => {
 }
 modifaySequelize()
 
-// Handel route Error
-app.use((req, res, next) => {
-  const error = new Error('Not Found')
-  error.status = 404  
-  next(error);
-});
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-      error: {
-         message:error.message
-     }
+  // Handel route Error
+  app.use((req, res, next) => {
+    const error = new Error('Not Found')
+    error.status = 404  
+    next(error);
   });
-});
+  app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    res.json({
+        error: {
+          message:error.message
+      }
+    });
+  });
 
 
 
