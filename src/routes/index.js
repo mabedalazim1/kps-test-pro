@@ -26,6 +26,8 @@ let routes = app => {
    router.get('/api/images', imgController.getListImages);
    router.get('/api/testimages', imgController.testImg);
    router.get('/api/listimages', listImages.getList);
+   router.get('/api/imagestest', listImages.testData);
+   router.get('/api/listimages/:secid/', listImages.getListById);
    router.get('/api/images/:name', imgController.downloadImage);
    router.delete('/api/images/:name', testAdmin, imgController.deleteImage);
   // Test Api
