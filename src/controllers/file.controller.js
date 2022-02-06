@@ -50,7 +50,7 @@ const uploadImage = async (req, res) => {
       fileName: req.file.filename,
       filePath: `/static/uploads/images/${req.file.filename}`
     });
-    console.log(filePath)
+    //console.log(filePath)
   } catch (err) {
     console.log(err);
 

@@ -62,6 +62,7 @@ exports.signup = (req, res, next) => {
 }
 
 exports.signin = (req, res) => {
+  
   User.findOne({
     where: {
       username: req.body.username
@@ -96,6 +97,7 @@ exports.signin = (req, res) => {
       })
     })
     .catch(err => {
-      res.status(500).send({ message: err.message, passwordIsValid })
+      res.status(500).send({ message: err.message})
+      res.status(403).send({message: err.message })
     })
 }

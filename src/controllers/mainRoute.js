@@ -13,8 +13,7 @@ module.exports = function mainRout(model, url) {
           
             model.findAll().then(data => {
                 if (data.length === 0) {
-                    res.status(204).json({ msg: "No Content" })
-                    
+                    res.status(204).json({ message: "No Content" })      
                 }
                 else {
                     const total = data.length
@@ -34,7 +33,7 @@ module.exports = function mainRout(model, url) {
                 res.status(201).json(data)
                 console.log(data)
             }).catch(err => {
-                res.status(500).json({ msg: "Cann't add this item", error: err })
+                res.status(500).json({ message: "Cann't add this item", error: err })
             })
         })
     router
