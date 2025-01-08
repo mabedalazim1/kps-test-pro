@@ -1,0 +1,27 @@
+// {
+//     "remotePath": "./api",
+//     "host": "win5225.site4now.net",
+//     "username": "elkwtherps",
+//     "password": "kps@2020",
+//     "port": 21,
+//     "secure": false,
+//     "protocol": "ftp",
+//     "uploadOnSave": false,
+//     "passive": true,
+//     "debug": false,
+//     "privateKeyPath": null,
+//     "passphrase": null,
+//     "agent": null,
+//     "allow": [],
+//     "ignore": [
+//         "\\.vscode",
+//         "\\.git",
+//         "\\.DS_Store"
+//     ],
+//     "generatedFiles": {
+//         "extensionsToInclude": [
+//             ""
+//         ],
+//         "path": ""
+//     }
+// }
