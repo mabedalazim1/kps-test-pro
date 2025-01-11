@@ -34,224 +34,225 @@ const getDegree = async (req, res, next) => {
         //Main Function
 
         const data = await Student.findAll({
-            attributes:['student_Id', 'grade_Id','std_fullName'],
+            attributes: ['student_Id', 'grade_Id', 'std_fullName'],
             where: { student_Id: stdId },
-            include: [{ model: Grade, attributes: ['grade_desc'] },
-            { model: Religion, attributes: ['religion_desc'] },
-            { model: Class, attributes: ['class_desc'] },
-            { model: Gender, attributes: ['gender_desc'] },
-            {
-                model: Degree,
-                where: { test_kind_Id: testKindId },
-                required: false,
-                attributes: ['test_kind_Id', 'grade_Id', 'show_data',],
-                include: [
-                    {
-                        model: Arabic,
-                        where: {
-                            [Op.and]: tetsParams
+            include: [
+                { model: Grade, attributes: ['grade_desc'] },
+                { model: Religion, attributes: ['religion_desc'] },
+                { model: Class, attributes: ['class_desc'] },
+                { model: Gender, attributes: ['gender_desc'] },
+                {
+                    model: Degree,
+                    where: { test_kind_Id: testKindId },
+                    required: false,
+                    attributes: ['test_kind_Id', 'grade_Id', 'show_data',],
+                    include: [
+                        {
+                            model: Arabic,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['arabic_desc', 'arabic_degre']
                         },
-                        attributes: ['arabic_desc', 'arabic_degre']
-                    },
-                    {
-                        model: Dain,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: Dain,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['dain_desc', 'dain_degre']
                         },
-                        attributes: ['dain_desc', 'dain_degre']
-                    },
-                    {
-                        model: Math,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: Math,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['math_desc', 'math_degre']
                         },
-                        attributes: ['math_desc', 'math_degre']
-                    },
-                    {
-                        model: Scince,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: Scince,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['scince_desc', 'scince_degre']
                         },
-                        attributes: ['scince_desc', 'scince_degre']
-                    },
-                    {
-                        model: Social,
-                        where: {
-                            [Op.or]: tetsParams
+                        {
+                            model: Social,
+                            where: {
+                                [Op.or]: tetsParams
+                            },
+                            attributes: ['social_desc', 'social_degre'],
+                            required: false,
                         },
-                        attributes: ['social_desc', 'social_degre'],
-                        required: false,
-                    },
-                    {
-                        model: English,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: English,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['english_desc', 'english_degre']
                         },
-                        attributes: ['english_desc', 'english_degre']
-                    },
-                    {
-                        model: Maharat,
-                        where: {
-                            [Op.or]: tetsParams
+                        {
+                            model: Maharat,
+                            where: {
+                                [Op.or]: tetsParams
+                            },
+                            attributes: ['maharat_desc', 'maharat_degre'],
+                            required: false,
                         },
-                        attributes: ['maharat_desc', 'maharat_degre'],
-                        required: false,
-                    },
-                    {
-                        model: Tocnolegy,
-                        where: {
-                            [Op.or]: tetsParams
+                        {
+                            model: Tocnolegy,
+                            where: {
+                                [Op.or]: tetsParams
+                            },
+                            attributes: ['tocnolegy_desc', 'tocnolegy_degre'],
+                            required: false,
                         },
-                        attributes: ['tocnolegy_desc', 'tocnolegy_degre'],
-                        required: false,
-                    },
-                    {
-                        model: Badania,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: Badania,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['badania_desc', 'badania_degre'],
+                            required: false,
                         },
-                        attributes: ['badania_desc', 'badania_degre'],
-                        required: false,
-                    },
-                    {
-                        model: General,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: General,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['general_desc', 'general_degre']
                         },
-                        attributes: ['general_desc', 'general_degre']
-                    },
-                    {
-                        model: French,
-                        where: {
-                            [Op.and]: tetsParams
+                        {
+                            model: French,
+                            where: {
+                                [Op.and]: tetsParams
+                            },
+                            attributes: ['french_desc', 'french_degre'],
+                            required: false,
                         },
-                        attributes: ['french_desc', 'french_degre'],
-                        required: false,
-                    },
-                    {
-                        model: Sort,
+                        {
+                            model: Sort,
 
-                        attributes: ['sort_desc', 'sort_code']
-                    },
+                            attributes: ['sort_desc', 'sort_code']
+                        },
 
-                ],
-            }
+                    ],
+                }
 
 
             ]
         })
-      /*  const data = await User.findAll({
-
-            where: { userSchoolId: stdId },
-            attributes: ['userSchoolId', 'fullName'],
-            include: {
-                model: Student,
-                attributes: ['student_Id', 'grade_Id'],
-                include: [
-                    { model: Grade, attributes: ['grade_desc'] },
-                    { model: Religion, attributes: ['religion_desc'] },
-                    { model: Class, attributes: ['class_desc'] },
-                    { model: Gender, attributes: ['gender_desc'] },
-                    {
-                        model: Degree,
-                        where: { test_kind_Id: testKindId },
-                        required: false,
-                        attributes: ['test_kind_Id', 'grade_Id', 'show_data',],
-                        include: [
-                            {
-                                model: Arabic,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['arabic_desc', 'arabic_degre']
-                            },
-                            {
-                                model: Dain,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['dain_desc', 'dain_degre']
-                            },
-                            {
-                                model: Math,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['math_desc', 'math_degre']
-                            },
-                            {
-                                model: Scince,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['scince_desc', 'scince_degre']
-                            },
-                            {
-                                model: Social,
-                                where: {
-                                    [Op.or]: tetsParams
-                                },
-                                attributes: ['social_desc', 'social_degre'],
-                                required: false,
-                            },
-                            {
-                                model: English,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['english_desc', 'english_degre']
-                            },
-                            {
-                                model: Maharat,
-                                where: {
-                                    [Op.or]: tetsParams
-                                },
-                                attributes: ['maharat_desc', 'maharat_degre'],
-                                required: false,
-                            },
-                            {
-                                model: Tocnolegy,
-                                where: {
-                                    [Op.or]: tetsParams
-                                },
-                                attributes: ['tocnolegy_desc', 'tocnolegy_degre'],
-                                required: false,
-                            },
-                            {
-                                model: Badania,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['badania_desc', 'badania_degre'],
-                                required: false,
-                            },
-                            {
-                                model: General,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['general_desc', 'general_degre']
-                            },
-                            {
-                                model: French,
-                                where: {
-                                    [Op.and]: tetsParams
-                                },
-                                attributes: ['french_desc', 'french_degre'],
-                                required: false,
-                            },
-                            {
-                                model: Sort,
-
-                                attributes: ['sort_desc', 'sort_code']
-                            },
-
-                        ],
-                    }
-                ]
-            },
-        })
-*/
+        /*  const data = await User.findAll({
+  
+              where: { userSchoolId: stdId },
+              attributes: ['userSchoolId', 'fullName'],
+              include: {
+                  model: Student,
+                  attributes: ['student_Id', 'grade_Id'],
+                  include: [
+                      { model: Grade, attributes: ['grade_desc'] },
+                      { model: Religion, attributes: ['religion_desc'] },
+                      { model: Class, attributes: ['class_desc'] },
+                      { model: Gender, attributes: ['gender_desc'] },
+                      {
+                          model: Degree,
+                          where: { test_kind_Id: testKindId },
+                          required: false,
+                          attributes: ['test_kind_Id', 'grade_Id', 'show_data',],
+                          include: [
+                              {
+                                  model: Arabic,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['arabic_desc', 'arabic_degre']
+                              },
+                              {
+                                  model: Dain,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['dain_desc', 'dain_degre']
+                              },
+                              {
+                                  model: Math,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['math_desc', 'math_degre']
+                              },
+                              {
+                                  model: Scince,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['scince_desc', 'scince_degre']
+                              },
+                              {
+                                  model: Social,
+                                  where: {
+                                      [Op.or]: tetsParams
+                                  },
+                                  attributes: ['social_desc', 'social_degre'],
+                                  required: false,
+                              },
+                              {
+                                  model: English,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['english_desc', 'english_degre']
+                              },
+                              {
+                                  model: Maharat,
+                                  where: {
+                                      [Op.or]: tetsParams
+                                  },
+                                  attributes: ['maharat_desc', 'maharat_degre'],
+                                  required: false,
+                              },
+                              {
+                                  model: Tocnolegy,
+                                  where: {
+                                      [Op.or]: tetsParams
+                                  },
+                                  attributes: ['tocnolegy_desc', 'tocnolegy_degre'],
+                                  required: false,
+                              },
+                              {
+                                  model: Badania,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['badania_desc', 'badania_degre'],
+                                  required: false,
+                              },
+                              {
+                                  model: General,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['general_desc', 'general_degre']
+                              },
+                              {
+                                  model: French,
+                                  where: {
+                                      [Op.and]: tetsParams
+                                  },
+                                  attributes: ['french_desc', 'french_degre'],
+                                  required: false,
+                              },
+                              {
+                                  model: Sort,
+  
+                                  attributes: ['sort_desc', 'sort_code']
+                              },
+  
+                          ],
+                      }
+                  ]
+              },
+          })
+  */
         if (data.length === 0) {
             res.status(204).send({ message: "No Content" })
         } else {
@@ -294,20 +295,20 @@ const getMark = async (req, res, next) => {
 
         const data = await Student.findAll({
             where: { student_Id: stdId },
-            attributes: ['student_Id', 'grade_Id','std_fullName'],
-            
-                include: [
-                    { model: Grade, attributes: ['grade_desc'] },
-                    { model: Religion, attributes: ['religion_desc'] },
-                    { model: Class, attributes: ['class_desc'] },
-                    { model: Gender, attributes: ['gender_desc'] },
-                    {
-                        model: Mark,
-                        where: { test_kind_Id: testKindId },
-                        required: false,
-                        include: { model: Sort }
-                    }
-                ]
+            attributes: ['student_Id', 'grade_Id', 'std_fullName'],
+
+            include: [
+                { model: Grade, attributes: ['grade_desc'] },
+                { model: Religion, attributes: ['religion_desc'] },
+                { model: Class, attributes: ['class_desc'] },
+                { model: Gender, attributes: ['gender_desc'] },
+                {
+                    model: Mark,
+                    where: { test_kind_Id: testKindId },
+                    required: false,
+                    include: { model: Sort }
+                }
+            ]
             ,
         })
         /*
@@ -373,20 +374,20 @@ const getDegree_B = async (req, res, next) => {
 
         const data = await Student.findAll({
             where: { student_Id: stdId },
-            attributes: ['student_Id', 'grade_Id','std_fullName'],
-           
-                include: [
-                    { model: Grade, attributes: ['grade_desc'] },
-                    { model: Religion, attributes: ['religion_desc'] },
-                    { model: Class, attributes: ['class_desc'] },
-                    { model: Gender, attributes: ['gender_desc'] },
-                    {
-                        model: Degree,
-                        where: { test_kind_Id: testKindId },
-                        required: false,
-                        include: { model: Sort }
-                    }
-                ]
+            attributes: ['student_Id', 'grade_Id', 'std_fullName'],
+
+            include: [
+                { model: Grade, attributes: ['grade_desc'] },
+                { model: Religion, attributes: ['religion_desc'] },
+                { model: Class, attributes: ['class_desc'] },
+                { model: Gender, attributes: ['gender_desc'] },
+                {
+                    model: Degree,
+                    where: { test_kind_Id: testKindId },
+                    required: false,
+                    include: { model: Sort }
+                }
+            ]
             ,
         })
         /*

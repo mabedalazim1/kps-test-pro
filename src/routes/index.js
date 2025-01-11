@@ -10,8 +10,11 @@ const { getDegree, getMark, getDegree_B } = require('./../controllers/school.dat
 const { countVisits, addVisits, countLogin, addLogin, loginData } = require('../controllers/visit.count.controller');
 const { LoginData } = require('../models/school.model');
 
+// Assessment Data
+const { getAssessment } = require('./../controllers/assessment.data.controller')
 // Excel Files
 const excelController = require("./../controllers/excel.controller");
+const assessementController = require("./../controllers/assessment.controller");
 
 // Send Notifications
 const notifications = require("./../controllers/notifications.controller");
@@ -152,12 +155,27 @@ let routes = app => {
     res.send('API is working properly Kps School');
   });
 
+// Curd Assessment
+router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin,getAssessment)
+
 
   // Excel Router
   router.post("/api/upload/student", testAdmin, uploadExcel.single("file"), excelController.upload_student);
   router.post("/api/upload/degree", testAdmin, uploadExcel.single("file"), excelController.upload_degree);
   router.post("/api/upload/mark", testAdmin, uploadExcel.single("file"), excelController.upload_mark);
   router.post("/api/upload/phrase", testAdmin, uploadExcel.single("file"), excelController.upload_phrase);
+  
+  //Upload Assessment
+  router.post("/api/upload/asesarabic", testAdmin, uploadExcel.single("file"), assessementController.upload_asesArabic);
+  router.post("/api/upload/asesmath", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMath);
+  router.post("/api/upload/asesscince", testAdmin, uploadExcel.single("file"), assessementController.upload_asesScince);
+  router.post("/api/upload/asessocial", testAdmin, uploadExcel.single("file"), assessementController.upload_asesSocial);
+  router.post("/api/upload/aseenglish", testAdmin, uploadExcel.single("file"), assessementController.upload_asesEnglish);
+  router.post("/api/upload/asesdain", testAdmin, uploadExcel.single("file"), assessementController.upload_asesDain);
+  router.post("/api/upload/asesmaharat", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMaharat);
+  router.post("/api/upload/asestocnolegy", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMTocnolegy);
+  
+  // Onther
   router.get("/api/excel", excelController.getTArabic);
   router.get("/api/getuser", excelController.getUsers);
 

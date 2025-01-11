@@ -46,6 +46,7 @@ const db = require('./config/database');
 const sql = require('./src/models');
 //const sudentSql = require('./src/models/school.model');
 const courseSql = require('./src/models/courses.model')
+const assessmentSql = require('./src/models/assessment.model')
 const modifaySequelize = async () => {
   try {
     
@@ -59,6 +60,9 @@ const modifaySequelize = async () => {
     // course data
     //await courseSql.creatSqlCoursestData()
     //await courseSql.initialCoursesData()
+
+    // assessment data
+    //await assessmentSql.creatSqlAssessmentData()
 
     await db.authenticate()
     console.log('Connection has been established successfully.')
