@@ -111,7 +111,7 @@ const upload_degree = async (req, res) => {
           tocnolegy_degre: row[11],
           badania_degre: row[12],
           general_degre: row[13],
-          sort_code: row[14],
+          sort_code: row[20],
           test_kind_Id: row[15],
           grade_Id: row[16],
           french_degre: row[17],
