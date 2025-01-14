@@ -174,6 +174,7 @@ router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin,getAssessmen
   router.post("/api/upload/asesdain", testAdmin, uploadExcel.single("file"), assessementController.upload_asesDain);
   router.post("/api/upload/asesmaharat", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMaharat);
   router.post("/api/upload/asestocnolegy", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMTocnolegy);
+  router.post("/api/upload/asesgiab", testAdmin, uploadExcel.single("file"), assessementController.upload_giab);
   
   // Onther
   router.get("/api/excel", excelController.getTArabic);

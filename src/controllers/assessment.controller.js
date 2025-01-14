@@ -6,13 +6,14 @@ const AsesScince = require('./../models/assessment.model').AsesScince
 const AsesSocial = require('./../models/assessment.model').AsesSocial
 const AsesTocnolegy = require('./../models/assessment.model').AsesTocnolegy
 const AsesMaharat = require('./../models/assessment.model').AsesMaharat
+const AsesGiab = require('./../models/assessment.model').Giab
 
 const Student = require('./../models/school.model').Student
 const User = require('./../models/school.model').User
 const readXlsxFile = require("read-excel-file/node");
 const fs = require("fs");
 const { promisify } = require('util');
-const { where } = require('sequelize');
+const { where, GEOMETRY } = require('sequelize');
 const unlinkAsync = promisify(fs.unlink)
 
 
@@ -714,6 +715,88 @@ const upload_asesMTocnolegy = (req, res) => {
     }
 };
 
+const upload_giab = (req, res) => {
+
+    try {
+        if (req.file == undefined) {
+            return res.status(400).send("Please upload an excel file!")
+        }
+        let fullPath = __basedir + "/resources/static/assets/excelFiles/"
+        let path =
+            fullPath + req.file.filename;
+
+        readXlsxFile(path).then(async (rows) => {
+            // skip header
+            rows.shift();
+            rows.shift();
+            rows.shift();
+            rows.shift();
+            let degrees = [];
+
+            rows.forEach((row) => {
+
+                let degree = {
+                    student_Id: row[3],
+                    giab_no: row[4],
+                    giab_rate: row[7],
+                    year_id: row[6],
+                    term_id: row[9],
+                    grade_id: row[5]
+                };
+
+                degrees.push(degree)
+            });
+
+            await AsesGiab.findAll({
+                where:
+                {
+                    year_id: degrees[0].year_id,
+                    term_id: degrees[0].term_id,
+                    grade_id: degrees[0].grade_id,
+
+                }
+            }).then(async (res) => {
+                if (res.length > 0) {
+                    await AsesGiab.destroy({
+                        where:
+                        {
+                            year_id: degrees[0].year_id,
+                            term_id: degrees[0].term_id,
+                            grade_id: degrees[0].grade_id,
+                        }
+                    })
+                }
+            })
+            AsesGiab.bulkCreate(degrees)
+                .then(() => {
+                    res.status(200).send({
+                        message: "Uploaded the file successfully: " + req.file.filename,
+                    });
+                })
+                .catch((error) => {
+                    res.status(500).send({
+                        message: "Fail to import data into database!",
+                        error: error.message,
+                    });
+                    console.log(error);
+                })
+        }).then(async () => {
+            // Delete the file like normal
+            await unlinkAsync(path)
+        })
+
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send({
+            message: "Could not upload the file: " + req.file.filename,
+        }).then(async () => {
+            // Delete the file like normal
+            await unlinkAsync(path)
+        })
+    }
+};
+
 
 module.exports = {
     upload_asesArabic,
@@ -724,4 +807,5 @@ module.exports = {
     upload_asesEnglish,
     upload_asesMaharat,
     upload_asesMTocnolegy,
+    upload_giab,
 };
