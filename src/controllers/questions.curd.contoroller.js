@@ -5,7 +5,7 @@ const { Question, Quiz, Answer } = require('./../models/courses.model');
 const createQuestion = async (req, res, next) => {
 
     const { question_id, course_id, quiz_id, question_text, question_img,
-        question_type, grade_id, subject_id, term_id
+        question_type, grade_id, subject_id, term_id, lang
     } = req.body
 
     if (!question_id || !course_id || !quiz_id || !grade_id || !subject_id || !term_id || !question_text) {
@@ -15,7 +15,7 @@ const createQuestion = async (req, res, next) => {
         const questionData =
         {
             question_id, course_id, quiz_id, question_text, question_img,
-            question_type, grade_id, subject_id, term_id
+            question_type, grade_id, subject_id, term_id, lang
         }
         const data = await Question.create(questionData)
         return res.status(201).json(data)
@@ -127,7 +127,7 @@ const updateQuestion = async (req, res, next) => {
 }
 
 const getNewQuestionId = async (req, res, next) => {
-    const {courseId, quizId, gradeId, subjectId, termId } = req.params
+    const { courseId, quizId, gradeId, subjectId, termId } = req.params
     try {
         const data = await Question.findAll({
             where: {

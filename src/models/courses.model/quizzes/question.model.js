@@ -42,7 +42,11 @@ module.exports = (db, type) => {
             allowNull: false,
             primaryKey: true,
         },
-        
+
+         lang: {
+            type: type.TINYINT,
+            defaultValue: 0
+        },
     },
         {
             timestamps: false,
