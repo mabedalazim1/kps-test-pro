@@ -42,7 +42,12 @@ module.exports = (db, type) => {
             defaultValue: 0,
             allowNull: false,
         },
+        active :{
+            type : type.TINYINT,
+            defaultValue: 1
+        },
     },
+    
         {
             timestamps: false,
             createdAt: false,

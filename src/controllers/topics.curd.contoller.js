@@ -43,7 +43,8 @@ const updateTopic = async (req, res, next) => {
                 term_id: termId
             }
         })
-
+        console.log("Mohamed")
+        console.log(topicId, gredId, subjectId, termId)
         if (data.length === 0) {
             res.status(204).send({ message: "No Content" })
         } else {
@@ -52,7 +53,9 @@ const updateTopic = async (req, res, next) => {
     }
     catch (err) {
         res.status(500).send({ message: err })
-        console.log("Error", err)
+        //console.log("Error", err)
+        console.log("afrfwerrtertettet")
+        console.log(topicId, gredId, subjectId, termId)
     }
 }
 
