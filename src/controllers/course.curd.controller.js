@@ -47,7 +47,7 @@ const getCoursesByGrade = async (req, res, next) => {
                         grade_id: gredId,
                         subject_id: subjectId,
                     },
-                    attributes: ['topic_id', 'title', 'description', 'term_id'],
+                    attributes: ['topic_id', 'title', 'description', 'term_id','active'],
                     required: false,
                 },
             ],
