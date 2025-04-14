@@ -4,7 +4,7 @@ const { Topic, Course, Question, Subpart, Answer, Review, Vocabulary, Quiz } = r
 const createCourse = async (req, res, next) => {
 
     const { course_id, topic_id, grade_id, subject_id, term_id,
-        title, description, course_img, course_sort_no } = req.body
+        title, description, course_img, course_sort_no, active } = req.body
 
     if (!topic_id || !course_id || !grade_id || !subject_id
         || !term_id || !title || !description) {
@@ -23,6 +23,7 @@ const createCourse = async (req, res, next) => {
             grade_id,
             subject_id,
             term_id,
+            active,
         }
         const data = await Course.create(course)
         return res.status(201).json(data)
@@ -47,7 +48,7 @@ const getCoursesByGrade = async (req, res, next) => {
                         grade_id: gredId,
                         subject_id: subjectId,
                     },
-                    attributes: ['topic_id', 'title', 'description', 'term_id','active'],
+                    attributes: ['topic_id', 'title', 'description', 'term_id', 'active'],
                     required: false,
                 },
             ],

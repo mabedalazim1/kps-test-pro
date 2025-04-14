@@ -54,7 +54,7 @@ const getTopics = async (req, res, next) => {
                         subject_id: subjectId,
                     },
                     required: false,
-                    attributes: ['course_id', 'title', 'description', 'course_img', 'course_sort_no']
+                    attributes: ['course_id', 'title', 'description', 'course_img', 'course_sort_no', 'active']
                 }
             ],
             order: [
@@ -96,7 +96,7 @@ const getCourse = async (req, res, next) => {
                         subject_id: subjectId,
                     },
                     required: false,
-                    attributes: ['course_id', 'title', 'description', 'subpart_img','sound']
+                    attributes: ['course_id', 'title', 'description', 'subpart_img', 'sound']
                 },
                 {
                     model: Review,
@@ -132,7 +132,7 @@ const getCourse = async (req, res, next) => {
                     attributes: ['quiz_id', 'quiz_title', 'course_id', 'quiz_description', 'active', 'time_limit'],
                     include: [
                         {
-                            model :Question,
+                            model: Question,
                             where: {
                                 course_id: courseId,
                                 grade_id: gredId,
@@ -140,11 +140,11 @@ const getCourse = async (req, res, next) => {
                                 subject_id: subjectId,
                             },
                             required: false,
-                            attributes:['question_id','quiz_id','question_img']
+                            attributes: ['question_id', 'quiz_id', 'question_img']
                         }
                     ]
                 },
-                
+
             ],
             /** 
             order: [
