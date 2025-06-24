@@ -9,13 +9,14 @@ module.exports = new Sequelize(
     config.password,
     {
         host: config.server,
-        dialect: "mssql", 
+        dialect: "mssql",
         dialectOptions: {
-        options: {  
-            encrypt: false,
-            enableArithAbort: false
-          }
-    },
-        logging:false
+            options: {
+                instanceName: 'SQLEXPRESS', // For SQLEXPRESS If Not Del It
+                encrypt: false,
+                enableArithAbort: false
+            }
+        },
+        logging: false
     }
 )

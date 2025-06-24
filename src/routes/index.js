@@ -33,6 +33,8 @@ const testAdmin = [authJwt.verifyToken, authJwt.isAdmin]
 const testisStdOrAdin = [authJwt.verifyToken, authJwt.isStdOrAdmin]
 const testisTechOrAdin = [authJwt.verifyToken, authJwt.isTechOrAdmin]
 
+//Get Users Data
+const { getStudentsData } = require('./../controllers/studentData.controller')
 
 let routes = app => {
   app.use(function (req, res, next) {
@@ -43,6 +45,8 @@ let routes = app => {
     next();
   });
 
+  // Get Student Data
+  router.get('/api/getStudentData',getStudentsData)
 
   // Upload Files
   router.post('/api/upload', testAdmin, controller.upload);
