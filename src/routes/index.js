@@ -25,8 +25,8 @@ const { getSubpartByGrade, createSubpart, updateSubpart, deleteSubpart, updateSu
 const { getVocabularyByGrade, deleteVocabulary, createVocabulary, updateVocabulary } = require('./../controllers/vocabulary.curd.controller')
 const { getReviewsByGrade, deleteReview, createReview, updateReview, updateReviewImg } = require('./../controllers/review.curd.controller')
 const { getQuizzesByGrade, deleteQuiz, updateQuiz, createQuiz, getNewQuzeId } = require('./../controllers/quizzs.curd.controller')
-const { getQuestionsByQuiz, deleteQuestion, createQuestion, updateQuestion,getNewQuestionId } = require('./../controllers/questions.curd.contoroller')
-const {  getAnswersByGrade,deleteAnswer,createAnswer, updateAnswer } = require('./../controllers/answer.curd.controller')
+const { getQuestionsByQuiz, deleteQuestion, createQuestion, updateQuestion, getNewQuestionId } = require('./../controllers/questions.curd.contoroller')
+const { getAnswersByGrade, deleteAnswer, createAnswer, updateAnswer } = require('./../controllers/answer.curd.controller')
 
 const testAdmin = [authJwt.verifyToken, authJwt.isAdmin]
 
@@ -46,7 +46,7 @@ let routes = app => {
   });
 
   // Get Student Data
-  router.get('/api/getStudentData',getStudentsData)
+  router.get('/api/getStudentData/:gradeId', testisTechOrAdin, getStudentsData)
 
   // Upload Files
   router.post('/api/upload', testAdmin, controller.upload);
@@ -146,10 +146,10 @@ let routes = app => {
   router.delete('/api/question/:questionId/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin, deleteQuestion)
   router.post('/api/question/', testisTechOrAdin, createQuestion)
   router.put('/api/question/:questionId/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin, updateQuestion)
-  router.get('/api/questionid/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin,getNewQuestionId )
-  
+  router.get('/api/questionid/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin, getNewQuestionId)
+
   //Curd Answers
-  router.get('/api/answer/:questionId/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin,getAnswersByGrade )
+  router.get('/api/answer/:questionId/:courseId/:quizId/:gradeId/:subjectId/:termId/', testisTechOrAdin, getAnswersByGrade)
   router.delete('/api/answer/:answerId/', testisTechOrAdin, deleteAnswer)
   router.post('/api/answer/', testisTechOrAdin, createAnswer)
   router.put('/api/answer/:answerId/', testisTechOrAdin, updateAnswer)
@@ -159,8 +159,8 @@ let routes = app => {
     res.send('API is working properly Kps School');
   });
 
-// Curd Assessment
-router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin,getAssessment)
+  // Curd Assessment
+  router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin, getAssessment)
 
 
   // Excel Router
@@ -168,7 +168,7 @@ router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin,getAssessmen
   router.post("/api/upload/degree", testAdmin, uploadExcel.single("file"), excelController.upload_degree);
   router.post("/api/upload/mark", testAdmin, uploadExcel.single("file"), excelController.upload_mark);
   router.post("/api/upload/phrase", testAdmin, uploadExcel.single("file"), excelController.upload_phrase);
-  
+
   //Upload Assessment
   router.post("/api/upload/asesarabic", testAdmin, uploadExcel.single("file"), assessementController.upload_asesArabic);
   router.post("/api/upload/asesmath", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMath);
@@ -179,7 +179,7 @@ router.get('/api/assessment/:student_Id/:term_id/', testisStdOrAdin,getAssessmen
   router.post("/api/upload/asesmaharat", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMaharat);
   router.post("/api/upload/asestocnolegy", testAdmin, uploadExcel.single("file"), assessementController.upload_asesMTocnolegy);
   router.post("/api/upload/asesgiab", testAdmin, uploadExcel.single("file"), assessementController.upload_giab);
-  
+
   // Onther
   router.get("/api/excel", excelController.getTArabic);
   router.get("/api/getuser", excelController.getUsers);

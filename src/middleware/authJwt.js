@@ -71,6 +71,10 @@ const isTeacherOrAdmin = (req, res, next) => {
   User.findByPk(req.userId).then(user => {
     user.getRoles().then(roles => {
       for (let i = 0; i < roles.length; i++) {
+        if (roles[i].name === "moderator") {
+          next();
+          return;
+        }
         if (roles[i].name === "teacher") {
           next();
           return;

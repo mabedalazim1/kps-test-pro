@@ -5,16 +5,18 @@ const {
 
 const getStudentsData = async (req, res, next) => {
 
+    const {gradeId} = req.params
     try {
 
         const data = await Student.findAll({
+            where: {grade_Id:gradeId},
             include: [
                 {
                     model: Gender,
                     attributes: ['gender_desc'],
                     required: false,
                 },
-                 {
+                {
                     model: Class,
                     attributes: ['class_desc'],
                     required: false,
