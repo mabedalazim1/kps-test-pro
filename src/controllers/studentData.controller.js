@@ -9,7 +9,11 @@ const getStudentsData = async (req, res, next) => {
     try {
 
         const data = await Student.findAll({
-            where: {grade_Id:gradeId},
+            where: {grade_Id:gradeId,
+                osraId:{
+                    [Op.gt]: 100,
+                }
+            },
             include: [
                 {
                     model: Gender,

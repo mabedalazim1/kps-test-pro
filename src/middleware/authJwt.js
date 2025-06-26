@@ -59,6 +59,10 @@ const isStudentOrAdmin = (req, res, next) => {
           next();
           return;
         }
+        if (roles[i].name === "moderator") {
+          next();
+          return;
+        }
       }
       res.status(403).send({
         message: "Require Student or Admin Role!"
