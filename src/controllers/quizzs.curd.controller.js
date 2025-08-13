@@ -151,29 +151,37 @@ const updateQuiz = async (req, res, next) => {
 
 
 const getNewQuzeId = async (req, res, next) => {
-    const { couresId, gredId, subjectId, termId } = req.params
+    const { couresId, gredId, subjectId, termId } = req.params;
+
+    // تحويل القيم لأرقام
+    const courseIdNum = Number(couresId);
+    const gradeIdNum = Number(gredId);
+    const subjectIdNum = Number(subjectId);
+    const termIdNum = Number(termId);
+
     try {
         const data = await Quiz.findAll({
             where: {
-                course_id: couresId,
-                grade_id: gredId,
-                subject_id: subjectId,
-                term_id: termId,
+                course_id: courseIdNum,
+                grade_id: gradeIdNum,
+                subject_id: subjectIdNum,
+                term_id: termIdNum,
             },
             attributes: [[Sequelize.fn('max', Sequelize.col('quiz_id')), 'id']],
             raw: true,
-
         })
+
         if (data.length === 0) {
             res.status(204).send({ message: "No Content" })
         } else {
-            res.status(200).json(data[0])
+            res.status(200).json(data[0]);
         }
     } catch (err) {
         res.status(500).json({ message: err })
         console.log(err)
     }
 }
+
 
 module.exports = {
     createQuiz,

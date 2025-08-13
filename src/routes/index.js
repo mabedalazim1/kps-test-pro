@@ -27,7 +27,8 @@ const { getReviewsByGrade, deleteReview, createReview, updateReview, updateRevie
 const { getQuizzesByGrade, deleteQuiz, updateQuiz, createQuiz, getNewQuzeId } = require('./../controllers/quizzs.curd.controller')
 const { getQuestionsByQuiz, deleteQuestion, createQuestion, updateQuestion, getNewQuestionId } = require('./../controllers/questions.curd.contoroller')
 const { getAnswersByGrade, deleteAnswer, createAnswer, updateAnswer } = require('./../controllers/answer.curd.controller')
-
+// Lesson Visits
+const { addLessonVisit, getLessonVisits, resetLessonVisits } = require('../controllers/lesson.visit.controller')
 const testAdmin = [authJwt.verifyToken, authJwt.isAdmin]
 
 const testisStdOrAdin = [authJwt.verifyToken, authJwt.isStdOrAdmin]
@@ -44,6 +45,13 @@ let routes = app => {
     );
     next();
   });
+
+  // Lesson Visits
+  const { addLessonVisit, getLessonVisits, resetLessonVisits } = require('../controllers/lesson.visit.controller')
+
+  router.post('/api/lesson-visits', testisStdOrAdin, addLessonVisit) // تسجيل الزيارة
+  router.get('/api/lesson-visits/:studentId/:subjectId/:termId', testisStdOrAdin, getLessonVisits) // استرجاع زيارات الطالب
+  router.delete('/api/lesson-visits/reset', testisTechOrAdin, resetLessonVisits) // إعادة ضبط زيارات طالب
 
   // Get Student Data
   router.get('/api/getStudentData/:gradeId', testisTechOrAdin, getStudentsData)

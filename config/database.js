@@ -12,7 +12,7 @@ module.exports = new Sequelize(
         dialect: "mssql",
         dialectOptions: {
             options: {
-                instanceName: 'SQLEXPRESS', // For SQLEXPRESS If Not Del It
+                //instanceName: 'SQLEXPRESS', // For SQLEXPRESS If Not Del It
                 encrypt: false,
                 enableArithAbort: false
             }

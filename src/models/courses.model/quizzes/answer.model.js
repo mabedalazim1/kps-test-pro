@@ -45,6 +45,10 @@ module.exports = (db, type) => {
             allowNull:false,
             primaryKey: true,
         },
+        answer_img:{
+            type: type.STRING,
+            allowNull:true,
+        },
     },
         {
             timestamps: false,

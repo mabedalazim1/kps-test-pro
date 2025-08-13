@@ -12,6 +12,7 @@ const QuestionModel = require('./quizzes/question.model')
 const QuizModel = require('./quizzes/quiz.model')
 const QuizTypeModel = require('./quizzes/quiz_type.model')
 const GradeModel = require('../school.model/grade.model');
+const LessonVisitModel = require('../courses.model/lesson.visit.model');
 
 // Create Models
 const Topic = TopiceModel(db, Sequelize)
@@ -26,6 +27,7 @@ const Question = QuestionModel(db, Sequelize)
 const Quiz = QuizModel(db, Sequelize)
 const QuizType = QuizTypeModel(db, Sequelize)
 const Grade = GradeModel(db, Sequelize)
+const LessonVisit = LessonVisitModel(db, Sequelize)
 
 // Define Relationships
 
@@ -141,6 +143,7 @@ const coursesModels = {
     Subpart,
     Review,
     QuizType,
+    LessonVisit,
 }
 
 module.exports = coursesModels;
