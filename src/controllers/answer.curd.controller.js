@@ -48,7 +48,7 @@ const deleteAnswer = async (req, res, next) => {
 const createAnswer = async (req, res, next) => {
 
     const { course_id, quiz_id, question_id,
-        answer_text, is_correct, grade_id, subject_id, term_id, answer_img =""
+        answer_text, is_correct, grade_id, subject_id, term_id, answer_img ="",match_key=""
     } = req.body
 if (!course_id ||!quiz_id || !grade_id || !subject_id || !term_id || !answer_text) {
         return res.status(400).send({ message: "Content can not be empty.!" })
@@ -57,7 +57,7 @@ if (!course_id ||!quiz_id || !grade_id || !subject_id || !term_id || !answer_tex
         const answerData =
         {
             course_id, quiz_id, question_id, answer_text,
-            is_correct, grade_id, subject_id, term_id,answer_img
+            is_correct, grade_id, subject_id, term_id,answer_img,match_key
         }
         const data = await Answer.create(answerData)
         return res.status(201).json({data, message: " The Ansewer Was added Successfully.!"})

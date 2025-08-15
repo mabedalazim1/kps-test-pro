@@ -49,6 +49,10 @@ module.exports = (db, type) => {
             type: type.STRING,
             allowNull:true,
         },
+        match_key:{
+            type: type.STRING,
+            allowNull:true,
+        },
     },
         {
             timestamps: false,
