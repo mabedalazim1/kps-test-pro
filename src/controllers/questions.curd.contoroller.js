@@ -79,17 +79,18 @@ const deleteQuestion = async (req, res, next) => {
 
         if (!data) {
             res.status(200).send({ message: "Question was not found.. !" })
-        } else {
-            await data.destroy()
+        } else {          
             await Answer.destroy({
                 where: {
                     question_id: questionId,
                     quiz_id: quizId,
+                    course_id: courseId,
                     grade_id: gradeId,
                     subject_id: subjectId,
                     term_id: termId,
                 }
-            })
+            }) 
+            await data.destroy()
             res.status(200).send({ message: "Question was delete successfully.", question_id: questionId })
         }
     }

@@ -86,23 +86,23 @@ const deleteQuiz = async (req, res, next) => {
                 }
             })
 
-            await data.destroy()
 
-            if(questionData.length > 0){
+            if (questionData.length > 0) {
                 for (let i = 0; i < questionData.length; i++) {
                     const questionId = questionData[i].question_id
                     console.log(questionId)
-                  await  Answer.destroy({
-                        where:{
-                            question_id:questionId,
+                    await Answer.destroy({
+                        where: {
+                            question_id: questionId,
                             quiz_id: quizId,
+                            course_id: courseId,
                             grade_id: gradeId,
                             subject_id: subjectId,
                             term_id: termId,
                         }
                     })
-                  }
-               
+                }
+
                 await Question.destroy({
                     where: {
                         quiz_id: quizId,
@@ -113,7 +113,7 @@ const deleteQuiz = async (req, res, next) => {
                     }
                 })
             }
-            
+            await data.destroy()
             res.status(200).send({ message: "Quiz was delete successfully.", quiz_id: quizId })
         }
     }
