@@ -116,12 +116,13 @@ const updateCourseImg = async (req, res, next) => {
 }
 
 const deleteCourse = async (req, res, next) => {
-    const { courseId, gredId, subjectId, termId } = req.params
+    const { topicId, courseId, gredId, subjectId, termId } = req.params
     const t = await sequelize.transaction()
 
     try {
         const data = await Course.findOne({
             where: {
+                topic_id : topicId,
                 course_id: courseId,
                 grade_id: gredId,
                 subject_id: subjectId,

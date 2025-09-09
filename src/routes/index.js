@@ -119,7 +119,7 @@ let routes = app => {
   router.post('/api/course/', testisTechOrAdin, createCourse)
   router.put('/api/course/:courseId/:gredId/:subjectId/:termId', testisTechOrAdin, updateCourse)
   router.put('/api/courseimg/:courseImg/', testisTechOrAdin, updateCourseImg)
-  router.delete('/api/course/:courseId/:gredId/:subjectId/:termId', testisTechOrAdin, deleteCourse)
+  router.delete('/api/course/:topicId/:courseId/:gredId/:subjectId/:termId', testisTechOrAdin, deleteCourse)
 
 
   //Curd Subparts
