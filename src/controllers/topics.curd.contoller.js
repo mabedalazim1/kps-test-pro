@@ -9,9 +9,9 @@ const {
 const createTopic = async (req, res, next) => {
     const { topic_id, grade_id, subject_id, term_id,
         title, description, lang, topic_sort_no } = req.body
-        if(!topic_id || !grade_id || !subject_id || !term_id  ||!title ||!description ){
-            return res.status(400).send({message:"Content can not be empty.!"})
-        }
+    if (!topic_id || !grade_id || !subject_id || !term_id || !title || !description) {
+        return res.status(400).send({ message: "Content can not be empty.!" })
+    }
     try {
         const topic =
         {
@@ -71,11 +71,29 @@ const deleteTopic = async (req, res, next) => {
             }
         })
         if (!data) {
-            res.status(200).send({ message: "Topic was not found.. !" })
-        } else {
-            await data.destroy()
-            res.status(200).send({ message: "Topic was delete successfully.", topic_id: topicId })
+            return res.status(404).send({ message: "Topic was not found.. !" })
         }
+
+        const coursesCount = await Course.count({
+            where: {
+                topic_id: topicId,
+                grade_id: gredId,
+                subject_id: subjectId,
+                term_id: termId,
+            },
+        })
+
+        if (coursesCount > 0) {
+            return res.status(400).send({
+                message: "لا يمكن حذف التوبيك، يوجد دروس مرتبطة به. احذف الدروس أولاً.",
+            })
+        }
+
+        await data.destroy()
+        return res.status(200).send({
+            message: "Topic was deleted successfully.",
+            topic_id: topicId,
+        })
     }
     catch (err) {
         res.status(500).send({ message: err })

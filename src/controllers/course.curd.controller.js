@@ -1,4 +1,5 @@
 
+const sequelize = require('./../../config/database')
 const { Topic, Course, Question, Subpart, Answer, Review, Vocabulary, Quiz } = require('./../models/courses.model');
 
 const createCourse = async (req, res, next) => {
@@ -116,6 +117,8 @@ const updateCourseImg = async (req, res, next) => {
 
 const deleteCourse = async (req, res, next) => {
     const { courseId, gredId, subjectId, termId } = req.params
+    const t = await sequelize.transaction()
+
     try {
         const data = await Course.findOne({
             where: {
@@ -123,12 +126,14 @@ const deleteCourse = async (req, res, next) => {
                 grade_id: gredId,
                 subject_id: subjectId,
                 term_id: termId
-            }
+            },
+            transaction: t
         })
 
 
         if (!data) {
-            res.status(200).send({ message: "Course was not found.. !" })
+            await t.rollback()
+            res.status(404).send({ message: "Course was not found.. !" })
         } else {
 
             const questions = await Question.findAll({
@@ -137,19 +142,20 @@ const deleteCourse = async (req, res, next) => {
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
-            for (let i = 0; i < questions.length; i++) {
-                const questionId = questions[i].question_id
-                const quizId = questions[i].quiz_id
+
+            for (let q of questions) {
                 await Answer.destroy({
                     where: {
-                        question_id: questionId,
-                        quiz_id: quizId,
+                        question_id: q.question_id,
+                        quiz_id: q.quiz_id,
                         grade_id: gredId,
                         subject_id: subjectId,
                         term_id: termId,
-                    }
+                    },
+                    transaction: t
                 })
             }
             await Question.destroy({
@@ -158,16 +164,18 @@ const deleteCourse = async (req, res, next) => {
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
 
-            Quiz.destroy({
+            await Quiz.destroy({
                 where: {
                     course_id: courseId,
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
 
             await Review.destroy({
@@ -176,7 +184,8 @@ const deleteCourse = async (req, res, next) => {
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
 
 
@@ -186,7 +195,8 @@ const deleteCourse = async (req, res, next) => {
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
 
 
@@ -196,15 +206,18 @@ const deleteCourse = async (req, res, next) => {
                     grade_id: gredId,
                     subject_id: subjectId,
                     term_id: termId
-                }
+                },
+                transaction: t
             })
-            await data.destroy()
+            await data.destroy({ transaction: t })
+            await t.commit()
 
             res.status(200).send({ message: "Course was delete successfully.", course_id: courseId })
         }
     }
     catch (err) {
-        res.status(500).send({ message: err })
+        await t.rollback()
+        res.status(500).send({ message: err.message || "Internal Server Error" })
         console.log("Error", err)
     }
 }
