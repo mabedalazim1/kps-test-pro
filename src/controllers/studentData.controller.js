@@ -41,7 +41,7 @@ const getStudentsData = async (req, res, next) => {
                             ),
                         ]
                     },
-                    attributes: ['username'],
+                    attributes: ['username','stdCode'],
                     required: true,
                 },
 
