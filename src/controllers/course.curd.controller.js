@@ -54,8 +54,10 @@ const getCoursesByGrade = async (req, res, next) => {
                 },
             ],
             order: [
-                ['course_sort_no', 'ASC']],
-
+                ['term_id', 'ASC'],
+                ['course_id', 'ASC'],
+                ['course_sort_no', 'ASC'],
+            ],
         })
         if (data.length === 0) {
             res.status(204).send({ message: "No Content" })
