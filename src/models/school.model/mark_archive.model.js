@@ -1,63 +1,93 @@
 module.exports = (db, type) => {
-    return db.define('degree', {
+    return db.define('marks_archive', {
+
+        archive_Id: {
+            type: type.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+
+        Year_Id: {
+            type: type.INTEGER,
+            allowNull: false,
+        },
+
         student_Id: {
             type: type.INTEGER,
             allowNull: false,
         },
+
         arabic_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         dain_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         math_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         scince_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         social_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
+            defaultValue: 0,
         },
+
         english_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         maharat_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
+            defaultValue: 0,
         },
+
         tocnolegy_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
+            defaultValue: 0,
         },
-        badania_degre: {
-            type: type.INTEGER,
-        },
+
         general_degre: {
-            type: type.INTEGER,
+            type: type.FLOAT,
             allowNull: false,
         },
+
         sort_code: {
             type: type.INTEGER,
         },
+
         test_kind_Id: {
             type: type.INTEGER,
             allowNull: false,
         },
+
         grade_Id: {
             type: type.INTEGER,
             allowNull: false,
         },
+
         french_degre: {
-            type: type.INTEGER,
-             defaultValue: 0,
+            type: type.FLOAT,
+            defaultValue: 0,
         },
+
         show_data: {
             type: type.BOOLEAN,
             defaultValue: 1,
         },
-    })
+
+    }, {
+        tableName: 'marks_archive',
+        timestamps: true
+    });
 }

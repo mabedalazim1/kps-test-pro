@@ -24,6 +24,15 @@ const UserdModel = require('./../user.model');
 const LoginModel = require('./login_count.model');
 const CountModel = require('./count.model');
 const LoginDataModel = require('./v_login_data.model');
+//************************* */
+    // Version  2
+//************************ */
+
+const StudentArchiveModel = require('./student_archive.modle.js');
+const YearModel = require('./year.model');
+const MarkArchiveModel =require('./mark_archive.model');
+const DegreeArchiveModel =require('./degree_archive.model.js');
+
 // Get Data
 const { graderData, classeData, testKindData } = require('../../data/schoolData')
 // Create Models
@@ -53,6 +62,10 @@ const Login = LoginModel(db, Sequelize)
 const Count = CountModel(db, Sequelize)
 const LoginData = LoginDataModel(db, Sequelize)
 
+const StudentArchive = StudentArchiveModel(db, Sequelize);
+const Year = YearModel(db, Sequelize);
+const MarkArchive = MarkArchiveModel(db, Sequelize);
+const DegreeArchive = DegreeArchiveModel(db, Sequelize);
 // Define Relationships
 
 Student.hasOne(User, {foreignKey: 'userSchoolId'})
@@ -118,6 +131,15 @@ Student.belongsTo(Religion, {foreignKey: 'religion_Id'})
 Gender.hasMany(Student, {foreignKey: 'gender_Id'})
 Student.belongsTo(Gender, {foreignKey: 'gender_Id'})
 
+
+Year.hasMany(StudentArchive, { foreignKey: 'Year_Id' });
+StudentArchive.belongsTo(Year, { foreignKey: 'Year_Id' });
+
+Year.hasMany(MarkArchive, { foreignKey: 'Year_Id' });
+MarkArchive.belongsTo(Year, { foreignKey: 'Year_Id' });
+
+Year.hasMany(DegreeArchive, { foreignKey: 'Year_Id' });
+DegreeArchive.belongsTo(Year, { foreignKey: 'Year_Id' });
 // Init Data
 const initialSchoolData = async () => {
 
@@ -218,6 +240,10 @@ const studentModels = {
     Login_count: Login,
     Count_Visits : Count,
     LoginData,
+    StudentArchive,
+    Year,
+    MarkArchive,
+    DegreeArchive,
 }
 
 module.exports = studentModels;
