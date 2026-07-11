@@ -17,6 +17,15 @@ module.exports = (db,type)=>{
             type: type.STRING
           },osraId: {
             type: type.STRING
-          }
+          },
+        IsActive: {
+            type: type.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+        },
+        InactiveDate: {
+            type: type.DATE,
+            allowNull: true
+        }
     })
     }

@@ -74,7 +74,10 @@ exports.signin = (req, res) => {
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: 'User Not found.' })
+        return res.status(200).send({
+          success: false,
+          message: 'تأكد من اسم المستخدم وكلمة المرور.'
+        })
       }
 
       if (user.userSchoolId !== null) {
@@ -93,33 +96,40 @@ exports.signin = (req, res) => {
         Students.findAll({
           where: { osraId: user.osraId },
         }).then(stdudent => {
-          if(stdudent.length > 0){
+          if (stdudent.length > 0) {
             for (let i = 0; i < stdudent.length; i++) {
-              
+
               students.push({
                 student_Id: stdudent[i].student_Id,
-                stdGender : stdudent[i].gender_Id,
-                stdGrade : stdudent[i].grade_Id,
-                stdClass : stdudent[i].class_Id,
-                firstName:stdudent[i].std_firstName,
-                fulltName:stdudent[i].std_fullName,
+                stdGender: stdudent[i].gender_Id,
+                stdGrade: stdudent[i].grade_Id,
+                stdClass: stdudent[i].class_Id,
+                firstName: stdudent[i].std_firstName,
+                fulltName: stdudent[i].std_fullName,
               })
             }
-          }else{
+          } else {
             students = null
           }
         })
       }
       var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
       if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: 'Invalid Password or User name!',
+        return res.status(200).send({
+          success: false,
+          message: 'تأكد من اسم المستخدم وكلمة المرور.'
+        })
+      }
+
+      if (!user.IsActive) {
+        return res.status(200).send({
+          success: false,
+          message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
         })
       }
 
       var token = jwt.sign({ id: user.id }, config.secret, {
-           expiresIn: 7200 // 2 hours
+        expiresIn: 7200 // 2 hours
         // expiresIn: 60 // one mn
       })
       var authorities = []
@@ -137,19 +147,20 @@ exports.signin = (req, res) => {
           userSchoolId: user.userSchoolId,
           stdGrade: stdGrade,
           stdGender: stdGender,
-          stdClass : stdClass,
+          stdClass: stdClass,
           students,
         })
       })
     })
     .catch(err => {
-      res.status(500).send({ message: err.message })
-      res.status(403).send({ message: err.message })
+      return res.status(500).send({
+        message: err.message
+      })
     })
 }
 
 
-exports.osraSingin =  (req, res) => {
+exports.osraSingin = (req, res) => {
   User.findOne({
     where: {
       username: req.body.username
@@ -157,7 +168,10 @@ exports.osraSingin =  (req, res) => {
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: 'User Not found.' })
+        return res.status(200).send({
+          success: false,
+          message: 'تأكد من اسم المستخدم وكلمة المرور.'
+        })
       }
 
       if (user.osraId !== null) {
@@ -165,27 +179,35 @@ exports.osraSingin =  (req, res) => {
         Students.findAll({
           where: { osraId: user.osraId },
         }).then(stdudent => {
-          if(stdudent.length > 0){
+          if (stdudent.length > 0) {
             for (let i = 0; i < stdudent.length; i++) {
-              
+
               students.push({
                 student_Id: stdudent[i].student_Id,
-                stdGender : stdudent[i].gender_Id,
-                stdGrade : stdudent[i].grade_Id,
-                stdClass : stdudent[i].class_Id,
-                firstName:stdudent[i].std_firstName,
-                fulltName:stdudent[i].std_fullName,
+                stdGender: stdudent[i].gender_Id,
+                stdGrade: stdudent[i].grade_Id,
+                stdClass: stdudent[i].class_Id,
+                firstName: stdudent[i].std_firstName,
+                fulltName: stdudent[i].std_fullName,
               })
             }
-          }else{
+          } else {
             students = null
           }
         })
       }
       var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
       if (!passwordIsValid) {
-        return res.status(401).send({
-          message: 'Invalid Password or User name!',
+        return res.status(200).send({
+          success: false,
+          message: 'تأكد من اسم المستخدم وكلمة المرور.'
+        })
+      }
+
+      if (!user.IsActive) {
+        return res.status(200).send({
+          success: false,
+          message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
         })
       }
 
@@ -199,13 +221,14 @@ exports.osraSingin =  (req, res) => {
           username: user.username,
           roles: authorities,
           firstName: user.firstName,
-          students:students,
+          students: students,
         })
       })
     })
     .catch(err => {
-      res.status(500).send({ message: err.message })
-      res.status(403).send({ message: err.message })
+      return res.status(500).send({
+        message: err.message
+      })
     })
 }
 
