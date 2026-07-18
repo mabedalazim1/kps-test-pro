@@ -96,9 +96,9 @@ let routes = app => {
   router.get('/api/imgpagination/:secid/', ImgPagination.getImgPagination)
 
   // Test School Data
-  router.get('/api/degree/:stdId/:testKindId/', testisStdOrAdin, getDegree)
-  router.get('/api/degree_b/:stdId/:testKindId/', testisStdOrAdin, getDegree_B)
-  router.get('/api/mark/:stdId/:testKindId/', testisStdOrAdin, getMark)
+  router.get('/api/degree/:stdId/:testKindId/:yearId?', testisStdOrAdin, getDegree)
+  router.get('/api/degree_b/:stdId/:testKindId/:yearId?', testisStdOrAdin, getDegree_B)
+  router.get('/api/mark/:stdId/:testKindId/:yearId?', testisStdOrAdin, getMark)
   router.get('/api/getListInfoById/:secid/:classid/', testisStdOrAdin, listImages.getListInfoById)
 
   // Courses

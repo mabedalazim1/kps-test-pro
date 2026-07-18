@@ -6,7 +6,7 @@ module.exports = (db, type) => {
         },
         class_Id: {
             type: type.INTEGER,
-            
+
         },
         gender_Id: {
             type: type.INTEGER,
@@ -20,15 +20,18 @@ module.exports = (db, type) => {
             type: type.INTEGER,
             allowNull: false,
         }
-        ,osraId: {
+        , osraId: {
             type: type.STRING,
-          }
-          ,std_firstName: {
+        },
+          stdCode: {
             type: type.STRING,
-          }
-          ,std_fullName: {
+        }
+          , std_firstName: {
             type: type.STRING,
-          }
+        }
+        , std_fullName: {
+            type: type.STRING,
+        }
     }
     )
 }

@@ -77,14 +77,32 @@ Login.belongsTo(User, {foreignKey: 'userSchoolId'})
 Student.hasMany(Degree, {foreignKey: 'student_Id'})
 Degree.belongsTo(Student, {foreignKey: 'student_Id'})
 
+Student.hasMany(DegreeArchive,{foreignKey:'stdCode',sourceKey:'stdCode'});
+DegreeArchive.belongsTo(Student,{foreignKey:'stdCode',targetKey:'stdCode'});
+
 Student.hasMany(Mark, {foreignKey: 'student_Id'})
 Mark.belongsTo(Student, {foreignKey: 'student_Id'})
+
+Student.hasMany(MarkArchive,{foreignKey:'stdCode',sourceKey:'stdCode'});
+MarkArchive.belongsTo(Student,{foreignKey:'stdCode',targetKey:'stdCode'});
+
+Grade.hasMany(Mark, {foreignKey: 'grade_Id'})
+Mark.belongsTo(Grade, {foreignKey: 'grade_Id'})
+
+Grade.hasMany(DegreeArchive, {foreignKey: 'grade_Id'});
+DegreeArchive.belongsTo(Grade, {foreignKey: 'grade_Id'});
+
+Grade.hasMany(MarkArchive, {foreignKey: 'grade_Id'});
+MarkArchive.belongsTo(Grade, {foreignKey: 'grade_Id'});
 
 Class.hasMany(Student, {foreignKey: 'class_Id'})
 Student.belongsTo(Class, {foreignKey: 'class_Id'})
 
 Grade.hasMany(Student, {foreignKey: 'grade_Id'})
 Student.belongsTo(Grade, {foreignKey: 'grade_Id'})
+
+Grade.hasMany(Degree, {foreignKey: 'grade_Id'})
+Degree.belongsTo(Grade, {foreignKey: 'grade_Id'})
 
 PhraseArabic.hasMany(Degree,{foreignKey:'arabic_degre'})
 Degree.belongsTo(PhraseArabic,{foreignKey:'arabic_degre'})
@@ -122,8 +140,49 @@ Degree.belongsTo(PhraseFrench,{foreignKey:'french_degre'})
 Sort.hasMany(Degree, {foreignKey: 'sort_code'})
 Degree.belongsTo(Sort, {foreignKey: 'sort_code'})
 
+// DegreeArchive Relationships
+
+PhraseArabic.hasMany(DegreeArchive, {foreignKey: 'arabic_degre'});
+DegreeArchive.belongsTo(PhraseArabic, { foreignKey: 'arabic_degre'});
+
+PhraseDain.hasMany(DegreeArchive, {foreignKey: 'dain_degre'});
+DegreeArchive.belongsTo(PhraseDain, {foreignKey: 'dain_degre'});
+
+PhraseMath.hasMany(DegreeArchive, {foreignKey: 'math_degre'});
+DegreeArchive.belongsTo(PhraseMath, {foreignKey: 'math_degre'});
+
+PhraseScince.hasMany(DegreeArchive, {foreignKey: 'scince_degre'});
+DegreeArchive.belongsTo(PhraseScince, {foreignKey: 'scince_degre'});
+
+PhraseSocial.hasMany(DegreeArchive, {foreignKey: 'social_degre'});
+DegreeArchive.belongsTo(PhraseSocial, {foreignKey: 'social_degre'});
+
+PhraseEnglish.hasMany(DegreeArchive, {foreignKey: 'english_degre'});
+DegreeArchive.belongsTo(PhraseEnglish, {foreignKey: 'english_degre'});
+
+PhraseMaharat.hasMany(DegreeArchive, {foreignKey: 'maharat_degre'});
+DegreeArchive.belongsTo(PhraseMaharat, {foreignKey: 'maharat_degre'});
+
+PhraseTocnolegy.hasMany(DegreeArchive, {foreignKey: 'tocnolegy_degre'});
+DegreeArchive.belongsTo(PhraseTocnolegy, {foreignKey: 'tocnolegy_degre'});
+
+PhraseBadania.hasMany(DegreeArchive, {foreignKey: 'badania_degre'});
+DegreeArchive.belongsTo(PhraseBadania, {foreignKey: 'badania_degre'});
+
+PhraseGeneral.hasMany(DegreeArchive, {foreignKey: 'general_degre'});
+DegreeArchive.belongsTo(PhraseGeneral, {foreignKey: 'general_degre'});
+
+PhraseFrench.hasMany(DegreeArchive, {foreignKey: 'french_degre'});
+DegreeArchive.belongsTo(PhraseFrench, {foreignKey: 'french_degre'});
+
+Sort.hasMany(DegreeArchive, {foreignKey: 'sort_code'});
+DegreeArchive.belongsTo(Sort, {foreignKey: 'sort_code'});
+
 Sort.hasMany(Mark, {foreignKey: 'sort_code'})
 Mark.belongsTo(Sort, {foreignKey: 'sort_code'})
+
+Sort.hasMany(MarkArchive, {foreignKey: 'sort_code'})
+MarkArchive.belongsTo(Sort, {foreignKey: 'sort_code'})
 
 Religion.hasMany(Student, {foreignKey: 'religion_Id'})
 Student.belongsTo(Religion, {foreignKey: 'religion_Id'})

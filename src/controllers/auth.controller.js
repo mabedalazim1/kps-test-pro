@@ -137,6 +137,13 @@ exports.signin = (req, res) => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push('ROLE_' + roles[i].name.toUpperCase())
         }
+
+        let loginDataKey = null;
+
+        if (authorities.includes("ROLE_TEACHER")) {
+          loginDataKey = req.body.password;
+        }
+        
         res.status(200).send({
           id: user.id,
           username: user.username,
@@ -149,6 +156,7 @@ exports.signin = (req, res) => {
           stdGender: stdGender,
           stdClass: stdClass,
           students,
+          loginDataKey: loginDataKey
         })
       })
     })
@@ -216,6 +224,7 @@ exports.osraSingin = (req, res) => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push('ROLE_' + roles[i].name.toUpperCase())
         }
+
         res.status(200).send({
           id: user.id,
           username: user.username,

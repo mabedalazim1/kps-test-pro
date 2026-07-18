@@ -85,9 +85,13 @@ module.exports = (db, type) => {
             type: type.BOOLEAN,
             defaultValue: 1,
         },
-
+        stdCode: {
+            type: type.STRING,
+            allowNull: false,
+        },
     }, {
         tableName: 'marks_archive',
-        timestamps: true
+        timestamps: true,
+        id: false
     });
 }
