@@ -32,6 +32,7 @@ const StudentArchiveModel = require('./student_archive.modle.js');
 const YearModel = require('./year.model');
 const MarkArchiveModel =require('./mark_archive.model');
 const DegreeArchiveModel =require('./degree_archive.model.js');
+const QuizHistoryModel = require('./quiz.history.model.js');
 
 // Get Data
 const { graderData, classeData, testKindData } = require('../../data/schoolData')
@@ -66,6 +67,8 @@ const StudentArchive = StudentArchiveModel(db, Sequelize);
 const Year = YearModel(db, Sequelize);
 const MarkArchive = MarkArchiveModel(db, Sequelize);
 const DegreeArchive = DegreeArchiveModel(db, Sequelize);
+const QuizHistory = QuizHistoryModel(db, Sequelize);
+
 // Define Relationships
 
 Student.hasOne(User, {foreignKey: 'userSchoolId'})
@@ -303,6 +306,7 @@ const studentModels = {
     Year,
     MarkArchive,
     DegreeArchive,
+    QuizHistory,
 }
 
 module.exports = studentModels;

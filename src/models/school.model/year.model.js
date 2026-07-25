@@ -17,7 +17,12 @@ module.exports = (db, type) => {
         Year: {
             type: type.INTEGER,
             allowNull: false
-        }
+        },
+         IsCurrent: {
+            type: type.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
 
     }, {
         tableName: 'MyYears',
