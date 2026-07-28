@@ -37,9 +37,9 @@ const testisTechOrAdin = [authJwt.verifyToken, authJwt.isTechOrAdmin]
 //Get Users Data
 const { getStudentsData } = require('./../controllers/studentData.controller')
 // Year
-const{ getCurrentYear } = require('./../controllers/year.controller')
+const { getCurrentYear } = require('./../controllers/year.controller')
 // Quiz History
-const{ startQuiz } = require('./../controllers/quiz.history.controller')
+const { startQuiz, updateQuizHistory, finishQuizHistory } = require('./../controllers/quiz.history.controller')
 
 let routes = app => {
   app.use(function (req, res, next) {
@@ -214,10 +214,11 @@ let routes = app => {
   router.post('/api/sendNotification', notifications.sendNotification)
 
   // Get Year 
-  router.get("/api/current",testisStdOrAdin, getCurrentYear);
- // Quiz History
- router.post("/api/start_quiz_history",testisStdOrAdin, startQuiz);
-
+  router.get("/api/current", testisStdOrAdin, getCurrentYear);
+  // Quiz History
+  router.post("/api/start_quiz_history", testisStdOrAdin, startQuiz);
+  router.put("/api/update_quiz_history/:id", testisStdOrAdin, updateQuizHistory);
+  router.put("/api/finish_quiz_history/:id", testisStdOrAdin, finishQuizHistory);
 
   app.use(router);
 

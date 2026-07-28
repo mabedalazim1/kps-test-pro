@@ -63,181 +63,191 @@ exports.signup = (req, res, next) => {
     })
 }
 
-exports.signin = (req, res) => {
-  var stdGender = ''
-  var stdGrade = ''
-  var stdClass = ''
-  User.findOne({
-    where: {
-      username: req.body.username
+exports.signin = async (req, res) => {
+
+  try {
+
+    let stdGender = '';
+    let stdGrade = '';
+    let stdClass = '';
+    let stdCode = '';
+    let students = null;
+
+    const user = await User.findOne({
+      where: {
+        username: req.body.username
+      }
+    });
+
+    if (!user) {
+      return res.status(200).send({
+        success: false,
+        message: 'تأكد من اسم المستخدم وكلمة المرور.'
+      });
     }
-  })
-    .then(user => {
-      if (!user) {
-        return res.status(200).send({
-          success: false,
-          message: 'تأكد من اسم المستخدم وكلمة المرور.'
-        })
-      }
 
-      if (user.userSchoolId !== null) {
-        Students.findAll({
-          where: { student_Id: user.userSchoolId },
-        }).then(std => {
-          stdGender = std[0].gender_Id
-          stdGrade = std[0].grade_Id
-          stdClass = std[0].class_Id
+    // التحقق من كلمة المرور
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
-        })
-      }
-
-      if (user.osraId !== null) {
-        var students = []
-        Students.findAll({
-          where: { osraId: user.osraId },
-        }).then(stdudent => {
-          if (stdudent.length > 0) {
-            for (let i = 0; i < stdudent.length; i++) {
-
-              students.push({
-                student_Id: stdudent[i].student_Id,
-                stdGender: stdudent[i].gender_Id,
-                stdGrade: stdudent[i].grade_Id,
-                stdClass: stdudent[i].class_Id,
-                firstName: stdudent[i].std_firstName,
-                fulltName: stdudent[i].std_fullName,
-              })
-            }
-          } else {
-            students = null
-          }
-        })
-      }
-      var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
-      if (!passwordIsValid) {
-        return res.status(200).send({
-          success: false,
-          message: 'تأكد من اسم المستخدم وكلمة المرور.'
-        })
-      }
-
-      if (!user.IsActive) {
-        return res.status(200).send({
-          success: false,
-          message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
-        })
-      }
-
-      var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 7200 // 2 hours
-        // expiresIn: 60 // one mn
-      })
-      var authorities = []
-      user.getRoles().then(roles => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push('ROLE_' + roles[i].name.toUpperCase())
-        }
-
-        let loginDataKey = null;
-
-        if (authorities.includes("ROLE_TEACHER")) {
-          loginDataKey = req.body.password;
-        }
-        
-        res.status(200).send({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          roles: authorities,
-          accessToken: token,
-          firstName: user.firstName,
-          userSchoolId: user.userSchoolId,
-          stdGrade: stdGrade,
-          stdGender: stdGender,
-          stdClass: stdClass,
-          students,
-          loginDataKey: loginDataKey
-        })
-      })
-    })
-    .catch(err => {
-      return res.status(500).send({
-        message: err.message
-      })
-    })
-}
-
-
-exports.osraSingin = (req, res) => {
-  User.findOne({
-    where: {
-      username: req.body.username
+    if (!passwordIsValid) {
+      return res.status(200).send({
+        success: false,
+        message: 'تأكد من اسم المستخدم وكلمة المرور.'
+      });
     }
-  })
-    .then(user => {
-      if (!user) {
-        return res.status(200).send({
-          success: false,
-          message: 'تأكد من اسم المستخدم وكلمة المرور.'
-        })
+
+    // التحقق من تفعيل الحساب
+    if (!user.IsActive) {
+      return res.status(200).send({
+        success: false,
+        message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
+      });
+    }
+
+    // بيانات الأسرة والطلاب
+    if (user.osraId !== null) {
+
+      const studentList = await Students.findAll({
+        where: { osraId: user.osraId }
+      });
+
+      if (studentList.length > 0) {
+
+        students = studentList.map(std => ({
+          student_Id: std.student_Id,
+          stdCode: std.stdCode,
+          stdGender: std.gender_Id,
+          stdGrade: std.grade_Id,
+          stdClass: std.class_Id,
+          firstName: std.std_firstName,
+          fulltName: std.std_fullName,
+        }));
+
+      }
+    }
+
+    const token = jwt.sign(
+      { id: user.id },
+      config.secret,
+      {
+        expiresIn: 7200
+      }
+    );
+
+    const roles = await user.getRoles();
+
+    const authorities = roles.map(role => (
+      'ROLE_' + role.name.toUpperCase()
+    ));
+
+    let loginDataKey = null;
+
+    if (authorities.includes("ROLE_TEACHER")) {
+      loginDataKey = req.body.password;
+    }
+
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      roles: authorities,
+      accessToken: token,
+      firstName: user.firstName,
+      userSchoolId: user.userSchoolId,
+      stdGrade,
+      stdGender,
+      stdClass,
+      stdCode,
+      students,
+      loginDataKey
+    });
+
+  } catch (err) {
+    return res.status(500).send({
+      message: err.message
+    });
+  }
+};
+
+
+exports.osraSingin = async (req, res) => {
+
+  try {
+
+    let students = null;
+
+    const user = await User.findOne({
+      where: {
+        username: req.body.username
+      }
+    });
+
+    if (!user) {
+      return res.status(200).send({
+        success: false,
+        message: 'تأكد من اسم المستخدم وكلمة المرور.'
+      });
+    }
+
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+
+    if (!passwordIsValid) {
+      return res.status(200).send({
+        success: false,
+        message: 'تأكد من اسم المستخدم وكلمة المرور.'
+      });
+    }
+
+    if (!user.IsActive) {
+      return res.status(200).send({
+        success: false,
+        message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
+      });
+    }
+
+    if (user.osraId !== null) {
+
+      const studentList = await Students.findAll({
+        where: { osraId: user.osraId }
+      });
+
+      if (studentList.length > 0) {
+
+        students = studentList.map(std => ({
+          student_Id: std.student_Id,
+          stdCode: std.stdCode,
+          stdGender: std.gender_Id,
+          stdGrade: std.grade_Id,
+          stdClass: std.class_Id,
+          firstName: std.std_firstName,
+          fulltName: std.std_fullName,
+        }));
+
       }
 
-      if (user.osraId !== null) {
-        var students = []
-        Students.findAll({
-          where: { osraId: user.osraId },
-        }).then(stdudent => {
-          if (stdudent.length > 0) {
-            for (let i = 0; i < stdudent.length; i++) {
+    }
 
-              students.push({
-                student_Id: stdudent[i].student_Id,
-                stdGender: stdudent[i].gender_Id,
-                stdGrade: stdudent[i].grade_Id,
-                stdClass: stdudent[i].class_Id,
-                firstName: stdudent[i].std_firstName,
-                fulltName: stdudent[i].std_fullName,
-              })
-            }
-          } else {
-            students = null
-          }
-        })
-      }
-      var passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
-      if (!passwordIsValid) {
-        return res.status(200).send({
-          success: false,
-          message: 'تأكد من اسم المستخدم وكلمة المرور.'
-        })
-      }
+    const roles = await user.getRoles();
 
-      if (!user.IsActive) {
-        return res.status(200).send({
-          success: false,
-          message: 'تم إيقاف هذا الحساب. يرجى التواصل مع إدارة المدرسة.'
-        })
-      }
+    const authorities = roles.map(role =>
+      'ROLE_' + role.name.toUpperCase()
+    );
 
-      var authorities = []
-      user.getRoles().then(roles => {
-        for (let i = 0; i < roles.length; i++) {
-          authorities.push('ROLE_' + roles[i].name.toUpperCase())
-        }
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      roles: authorities,
+      firstName: user.firstName,
+      students
+    });
 
-        res.status(200).send({
-          id: user.id,
-          username: user.username,
-          roles: authorities,
-          firstName: user.firstName,
-          students: students,
-        })
-      })
-    })
-    .catch(err => {
-      return res.status(500).send({
-        message: err.message
-      })
-    })
-}
+  } catch (err) {
+
+    return res.status(500).send({
+      message: err.message
+    });
+
+  }
+
+};
 
