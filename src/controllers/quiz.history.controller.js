@@ -48,49 +48,38 @@ const startQuiz = async (req, res) => {
             });
         }
 
-        // حساب رقم المحاولة
-        const lastAttempt = await QuizHistory.findOne({
+        const [result] = await QuizHistory.sequelize.query(
+            `
+                EXEC SP_GetOrCreate_Quiz_Attempt
+                    @Year_Id=:Year_Id,
+                    @Std_Code=:Std_Code,
+                    @Lesson_Name=:Lesson_Name,
+                    @Course_Id=:Course_Id,
+                    @Quiz_Id=:Quiz_Id,
+                    @Grade_Id=:Grade_Id,
+                    @Subject_Id=:Subject_Id,
+                    @Term_Id=:Term_Id,
+                    @Quiz_Title=:Quiz_Title,
+                    @Total_Questions=:Total_Questions
+                `,
+            {
+                replacements: {
+                    Year_Id: currentYear.Year_Id,
+                    Std_Code,
+                    Lesson_Name,
+                    Course_Id,
+                    Quiz_Id,
+                    Grade_Id,
+                    Subject_Id,
+                    Term_Id,
+                    Quiz_Title,
+                    Total_Questions
+                }
+            }
+        );
+        console.log("result", result[0])
+        return res.status(200).json(result[0]);
 
-            where: {
-                Year_Id: currentYear.Year_Id,
-                Std_Code,
-                Course_Id,
-                Quiz_Id,
-                Grade_Id,
-                Subject_Id,
-                Term_Id
-            },
-
-            order: [
-                ['Attempt_No', 'DESC']
-            ]
-
-        });
-
-        const attemptNo = lastAttempt
-            ? lastAttempt.Attempt_No + 1
-            : 1;
-
-        const data = await QuizHistory.create({
-
-            Year_Id: currentYear.Year_Id,
-            Std_Code,
-            Course_Id,
-            Lesson_Name,
-            Quiz_Id,
-            Quiz_Title,
-            Grade_Id,
-            Subject_Id,
-            Term_Id,
-            Attempt_No: attemptNo,
-            Total_Questions
-
-        });
-
-        return res.status(201).json({
-            Id: data.Id,
-            Attempt_No: data.Attempt_No
-        });
 
     } catch (err) {
         console.log(err);
@@ -183,7 +172,7 @@ const finishQuizHistory = async (req, res) => {
 
     }
 
-    
+
 };
 module.exports = {
     startQuiz,
