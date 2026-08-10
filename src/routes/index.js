@@ -55,10 +55,10 @@ let routes = app => {
 
   router.post('/api/lesson-visits', testisStdOrAdin, addLessonVisit) // تسجيل الزيارة
   router.get('/api/lesson-visits/:studentId/:subjectId/:termId', testisStdOrAdin, getLessonVisits) // استرجاع زيارات الطالب
-  router.delete('/api/lesson-visits/reset', testisTechOrAdin, resetLessonVisits) // إعادة ضبط زيارات طالب
+  router.delete('/api/lesson-visits/reset', testisStdOrAdin, resetLessonVisits) // إعادة ضبط زيارات طالب
 
   // Get Student Data
-  router.get('/api/getStudentData/:gradeId', testisTechOrAdin, getStudentsData)
+  router.get('/api/getStudentData/:gradeId', testisStdOrAdin, getStudentsData)
 
   // Upload Files
   router.post('/api/upload', testAdmin, controller.upload);

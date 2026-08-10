@@ -4,6 +4,21 @@ const {
 } = require('../models/school.model');
 
 
+const getCurrentYear = async () => {
+
+    const currentYear = await Year.findOne({
+        where: {
+            IsCurrent: true
+        }
+    });
+
+    if (!currentYear) {
+        throw new Error("Current year not configured.");
+    }
+
+    return currentYear;
+}
+
 const startQuiz = async (req, res) => {
 
     const {
@@ -36,18 +51,9 @@ const startQuiz = async (req, res) => {
     try {
 
         // السنة الحالية
-        const currentYear = await Year.findOne({
-            where: {
-                IsCurrent: true
-            }
-        });
+        const currentYear = await getCurrentYear();
 
-        if (!currentYear) {
-            return res.status(500).json({
-                message: "Current year not configured."
-            });
-        }
-
+        // بدء الإجراء المخزن
         const [result] = await QuizHistory.sequelize.query(
             `
                 EXEC SP_GetOrCreate_Quiz_Attempt
@@ -77,7 +83,7 @@ const startQuiz = async (req, res) => {
                 }
             }
         );
-        console.log("result", result[0])
+
         return res.status(200).json(result[0]);
 
 
@@ -98,6 +104,15 @@ const updateQuizHistory = async (req, res) => {
         Correct_Answers
     } = req.body;
 
+    if (
+        Answered_Questions == null ||
+        Correct_Answers == null
+    ) {
+        return res.status(400).json({
+            message: "Missing progress data."
+        });
+    }
+
     if (!id) {
         return res.status(400).json({
             message: "History id is required."
@@ -111,6 +126,12 @@ const updateQuizHistory = async (req, res) => {
         if (!history) {
             return res.status(404).json({
                 message: "Quiz history not found."
+            });
+        }
+
+        if (history.Finished_At) {
+            return res.status(400).json({
+                message: "Quiz attempt already finished."
             });
         }
 
@@ -142,6 +163,11 @@ const finishQuizHistory = async (req, res) => {
 
     const { id } = req.params;
 
+    if (!id) {
+        return res.status(400).json({
+            message: "History id is required."
+        });
+    }
     try {
 
         const history = await QuizHistory.findByPk(id);
@@ -149,6 +175,12 @@ const finishQuizHistory = async (req, res) => {
         if (!history) {
             return res.status(404).json({
                 message: "Quiz history not found."
+            });
+        }
+
+        if (history.Finished_At) {
+            return res.status(200).json({
+                message: "Quiz already finished."
             });
         }
 
