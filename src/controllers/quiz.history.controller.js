@@ -203,11 +203,60 @@ const finishQuizHistory = async (req, res) => {
         });
 
     }
-
-
 };
+
+const getLastQuizHistory = async (req, res) => {
+
+        const {
+        stdCode,
+        termId,
+        subjectId
+    } = req.params;
+
+    if (!stdCode || !termId || !subjectId) {
+        return res.status(400).json({
+            message: "Student, term and subject are required."
+        });
+    }
+
+
+    try {
+
+        const currentYear = await getCurrentYear();
+
+        const history = await QuizHistory.findOne({
+            where: {
+                Year_Id: currentYear.Year_Id,
+                Std_Code :stdCode,
+                Term_Id: termId,
+                Subject_Id: subjectId
+            },
+            order: [
+                ["Started_At", "DESC"]
+            ]
+        });
+
+        if (!history) {
+            return res.status(200).json(null);
+        }
+
+        return res.status(200).json(history);
+
+    } catch (err) {
+
+        console.log(err);
+
+        return res.status(500).json({
+            message: err.message
+        });
+
+    }
+};
+
+
 module.exports = {
     startQuiz,
     updateQuizHistory,
     finishQuizHistory,
+    getLastQuizHistory,
 };
