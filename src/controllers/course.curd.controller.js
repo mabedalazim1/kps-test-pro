@@ -152,6 +152,7 @@ const deleteCourse = async (req, res, next) => {
             for (let q of questions) {
                 await Answer.destroy({
                     where: {
+                        course_id: courseId,
                         question_id: q.question_id,
                         quiz_id: q.quiz_id,
                         grade_id: gredId,

@@ -39,8 +39,8 @@ const { getStudentsData } = require('./../controllers/studentData.controller')
 // Year
 const { getCurrentYear } = require('./../controllers/year.controller')
 // Quiz History
-const { startQuiz, updateQuizHistory, finishQuizHistory, getLastQuizHistory }
-  = require('./../controllers/quiz.history.controller')
+const { startQuiz, updateQuizHistory, finishQuizHistory, getLastQuizHistory,
+  getFinishedQuizzesCount} = require('./../controllers/quiz.history.controller')
 
 let routes = app => {
   app.use(function (req, res, next) {
@@ -221,6 +221,7 @@ let routes = app => {
   router.put("/api/update_quiz_history/:id", testisStdOrAdin, updateQuizHistory);
   router.put("/api/finish_quiz_history/:id", testisStdOrAdin, finishQuizHistory);
   router.get("/api/last_history/:stdCode/:termId/:subjectId", testisStdOrAdin, getLastQuizHistory);
+  router.get('/api/finished_quizzes/:stdCode/:courseId/:termId/:subjectId',testisStdOrAdin,getFinishedQuizzesCount)
 
   app.use(router);
 

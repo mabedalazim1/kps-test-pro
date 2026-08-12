@@ -207,7 +207,7 @@ const finishQuizHistory = async (req, res) => {
 
 const getLastQuizHistory = async (req, res) => {
 
-        const {
+    const {
         stdCode,
         termId,
         subjectId
@@ -227,7 +227,7 @@ const getLastQuizHistory = async (req, res) => {
         const history = await QuizHistory.findOne({
             where: {
                 Year_Id: currentYear.Year_Id,
-                Std_Code :stdCode,
+                Std_Code: stdCode,
                 Term_Id: termId,
                 Subject_Id: subjectId
             },
@@ -253,10 +253,66 @@ const getLastQuizHistory = async (req, res) => {
     }
 };
 
+const getFinishedQuizzesCount = async (req, res) => {
+
+    const {
+        stdCode,
+        courseId,
+        termId,
+        subjectId
+    } = req.params
+
+    if (!stdCode || !courseId || !termId || !subjectId) {
+        return res.status(400).json({
+            message: "Student, course, term and subject are required."
+        })
+    }
+
+    try {
+
+        const currentYear = await getCurrentYear()
+
+        const [result] = await QuizHistory.sequelize.query(
+            `
+            SELECT COUNT(DISTINCT Quiz_Id) AS Finished_Quizzes
+            FROM Student_Quiz_History
+            WHERE Year_Id = :Year_Id
+                AND Std_Code = :Std_Code
+                AND Course_Id = :Course_Id
+                AND Term_Id = :Term_Id
+                AND Subject_Id = :Subject_Id
+                AND Finished_At IS NOT NULL
+                AND Quiz_Id IS NOT NULL
+            `,
+            {
+                replacements: {
+                    Year_Id: currentYear.Year_Id,
+                    Std_Code: stdCode,
+                    Course_Id: courseId,
+                    Term_Id: termId,
+                    Subject_Id: subjectId
+                }
+            }
+        )
+
+        return res.status(200).json({
+            count: Number(result[0].Finished_Quizzes)
+        })
+
+    } catch (err) {
+
+        console.log(err)
+
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
 
 module.exports = {
     startQuiz,
     updateQuizHistory,
     finishQuizHistory,
     getLastQuizHistory,
+    getFinishedQuizzesCount,
 };
