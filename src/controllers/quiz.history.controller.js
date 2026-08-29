@@ -666,6 +666,87 @@ const getStudentSubjectProgress = async (req, res) => {
   }
 };
 
+const getQuizAttempts = async (req, res) => {
+  const { stdCode, courseId, termId, subjectId } = req.params;
+
+  if (!stdCode || !courseId || !termId || !subjectId) {
+    return res.status(400).json({
+      message: "Student, course, term and subject are required.",
+    });
+  }
+
+  try {
+    const currentYear = await getCurrentYear();
+
+    const [result] = await QuizHistory.sequelize.query(
+      `
+      WITH LastAttempts AS (
+          SELECT
+              h.Id,
+              h.Quiz_Id,
+              h.Course_Id,
+              h.Attempt_No,
+              h.Total_Questions,
+              h.Answered_Questions,
+              h.Correct_Answers,
+              h.Started_At,
+              h.Finished_At,
+
+              ROW_NUMBER() OVER (
+                  PARTITION BY
+                      h.Quiz_Id,
+                      h.Course_Id
+                  ORDER BY
+                      h.Started_At DESC,
+                      h.Id DESC
+              ) AS rn
+
+          FROM Student_Quiz_History h
+
+          WHERE h.Year_Id = :Year_Id
+              AND h.Std_Code = :Std_Code
+              AND h.Course_Id = :Course_Id
+              AND h.Term_Id = :Term_Id
+              AND h.Subject_Id = :Subject_Id
+              AND h.Quiz_Id IS NOT NULL
+      )
+
+      SELECT
+          Id,
+          Quiz_Id,
+          Course_Id,
+          Attempt_No,
+          Total_Questions,
+          Answered_Questions,
+          Correct_Answers,
+          Started_At,
+          Finished_At
+      FROM LastAttempts
+      WHERE rn = 1
+
+      ORDER BY Quiz_Id ASC
+      `,
+      {
+        replacements: {
+          Year_Id: currentYear.Year_Id,
+          Std_Code: stdCode,
+          Course_Id: courseId,
+          Term_Id: termId,
+          Subject_Id: subjectId,
+        },
+      }
+    );
+
+    return res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   startQuiz,
   updateQuizHistory,
@@ -673,4 +754,5 @@ module.exports = {
   getLastQuizHistory,
   getFinishedQuizzesCount,
   getStudentSubjectProgress,
+  getQuizAttempts,
 };

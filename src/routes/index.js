@@ -113,6 +113,7 @@ const {
   getLastQuizHistory,
   getFinishedQuizzesCount,
   getStudentSubjectProgress,
+  getQuizAttempts,
 } = require("./../controllers/quiz.history.controller");
 
 let routes = (app) => {
@@ -534,6 +535,11 @@ let routes = (app) => {
     testisStdOrAdin,
     getStudentSubjectProgress,
   );
+  router.get(
+    "/api/quiz_attempts/:stdCode/:courseId/:termId/:subjectId",
+    testisStdOrAdin,
+    getQuizAttempts,
+);
 
   app.use(router);
 };
