@@ -59,5 +59,9 @@ module.exports = (db, type) => {
             type: type.BOOLEAN,
             defaultValue: 1,
         },
+        Year_Id: {
+            type: type.INTEGER,
+            allowNull: false
+        }
     })
 }

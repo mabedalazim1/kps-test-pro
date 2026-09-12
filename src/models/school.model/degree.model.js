@@ -53,11 +53,15 @@ module.exports = (db, type) => {
         },
         french_degre: {
             type: type.INTEGER,
-             defaultValue: 0,
+            defaultValue: 0,
         },
         show_data: {
             type: type.BOOLEAN,
             defaultValue: 1,
         },
+        Year_Id: {
+            type: type.INTEGER,
+            allowNull: false
+        }
     })
 }
