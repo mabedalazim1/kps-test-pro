@@ -26,7 +26,6 @@ const degreePhraseIncludes = [
     { model: Tocnolegy, attributes: ['tocnolegy_desc', 'tocnolegy_degre'], required: false },
     { model: Badania, attributes: ['badania_desc', 'badania_degre'], required: false },
     { model: General, attributes: ['general_desc', 'general_degre'] },
-    { model: French, attributes: ['french_desc', 'french_degre'], required: false },
 ];
 // =====================================================
 // النظام الجديد للدرجات
@@ -46,34 +45,255 @@ const convertDegreeTo20 = (degree) => {
 // التقييم حسب النسبة المئوية
 // =====================================================
 
-const getDegreeEvaluation = (degree) => {
-    if (degree === null || degree === undefined) {
-        return null;
+const getDegreeEvaluation = (degree, maxDegree) => {
+
+    if (
+        degree === null ||
+        degree === undefined ||
+        maxDegree === null ||
+        maxDegree === undefined ||
+        Number(maxDegree) === 0
+    ) {
+        return {
+            degree_20: null,
+            evaluation: null,
+            description: null
+        };
     }
-    const percentage = (Number(degree) / 15) * 100;
+
+    const numericDegree = Number(degree);
+    const numericMaxDegree = Number(maxDegree);
+
+    // الحد الأقصى الجديد بعد تحويل كل مادة من 15 إلى 20
+    // 15 × عدد المواد → 20 × عدد المواد
+    const maxDegree20 =
+        (numericMaxDegree / 15) * 20;
+
+    // تحويل الدرجة الفعلية بنفس النسبة
+    const degree20 =
+        (numericDegree / numericMaxDegree) * maxDegree20;
+
+    // حساب النسبة المئوية للتقييم
+    const percentage =
+        (numericDegree / numericMaxDegree) * 100;
+
+    // التقريب إلى ربع درجة
+    const convertedDegree =
+        globalThis.Math.round(degree20 * 4) / 4;
+
     if (percentage >= 85) {
-        return "ممتاز";
+        return {
+            degree_20: convertedDegree,
+            evaluation: "ممتاز",
+            description: "أنشطة إثرائية"
+        };
     }
+
     if (percentage >= 75) {
-        return "جيد جدًا";
+        return {
+            degree_20: convertedDegree,
+            evaluation: "جيد جدًا",
+            description: "رعاية وتحفيز"
+        };
     }
+
     if (percentage >= 65) {
-        return "جيد";
+        return {
+            degree_20: convertedDegree,
+            evaluation: "جيد",
+            description: "رفع كفاءة"
+        };
     }
+
     if (percentage >= 50) {
-        return "مقبول";
+        return {
+            degree_20: convertedDegree,
+            evaluation: "مقبول",
+            description: "رفع مستوى"
+        };
     }
-    return "دون المستوى";
+
+    return {
+        degree_20: convertedDegree,
+        evaluation: "دون المستوى",
+        description: "أنشطة علاجية"
+    };
 };
 
-// =====================================================
-// getDegree
-// =====================================================
+const getNewNumericDegrees = (degreeInfo) => {
+
+    const generalMaxDegree =
+        Number(degreeInfo.grade_Id) <= 3
+            ? 45
+            : 75;
+
+    const generalEvaluation =
+        getDegreeEvaluation(
+            degreeInfo.general_degre,
+            generalMaxDegree
+        );
+
+    return {
+        student_Id: degreeInfo.student_Id,
+        grade_Id: degreeInfo.grade_Id,
+        test_kind_Id: degreeInfo.test_kind_Id,
+        show_data: degreeInfo.show_data,
+        Year_Id: degreeInfo.Year_Id,
+        sort_code: degreeInfo.sort_code,
+
+        arabic_degre: degreeInfo.arabic_degre,
+        arabic_degre_20: convertDegreeTo20(degreeInfo.arabic_degre),
+        arabic_evaluation: getDegreeEvaluation(degreeInfo.arabic_degre, 15),
+
+        math_degre: degreeInfo.math_degre,
+        math_degre_20: convertDegreeTo20(degreeInfo.math_degre),
+        math_evaluation: getDegreeEvaluation(degreeInfo.math_degre, 15),
+
+        english_degre: degreeInfo.english_degre,
+        english_degre_20: convertDegreeTo20(degreeInfo.english_degre),
+        english_evaluation: getDegreeEvaluation(degreeInfo.english_degre, 15),
+
+        scince_degre: degreeInfo.scince_degre,
+        scince_degre_20: convertDegreeTo20(degreeInfo.scince_degre),
+        scince_evaluation: getDegreeEvaluation(degreeInfo.scince_degre, 15),
+
+        social_degre: degreeInfo.social_degre,
+        social_degre_20: convertDegreeTo20(degreeInfo.social_degre),
+        social_evaluation: getDegreeEvaluation(degreeInfo.social_degre, 15),
+
+        general_degre: degreeInfo.general_degre,
+        general_degre_20: generalEvaluation.degree_20,
+        general_evaluation: generalEvaluation,
+
+        dain_degre: degreeInfo.dain_degre,
+        dain_degre_20: convertDegreeTo20(degreeInfo.dain_degre),
+        dain_evaluation: getDegreeEvaluation(degreeInfo.dain_degre, 15),
+
+        tocnolegy_degre: degreeInfo.tocnolegy_degre,
+        tocnolegy_degre_20: convertDegreeTo20(degreeInfo.tocnolegy_degre),
+        tocnolegy_evaluation: getDegreeEvaluation(degreeInfo.tocnolegy_degre, 15),
+
+        maharat_degre: degreeInfo.maharat_degre,
+        maharat_degre_20: convertDegreeTo20(degreeInfo.maharat_degre),
+        maharat_evaluation: getDegreeEvaluation(degreeInfo.maharat_degre, 15)
+    };
+};
+
+
+const getOldDegreeWithPhrases = async ({
+    DegreeTable,
+    degreeWhere,
+    testKindId,
+    gradeId
+}) => {
+
+    const phraseWhere = {
+        [Op.and]: [
+            {
+                test_kind_Id: testKindId
+            },
+            {
+                grade_Id: gradeId
+            }
+        ]
+    };
+
+    const data = await DegreeTable.findOne({
+        where: degreeWhere,
+
+        attributes: [
+            'student_Id',
+            'grade_Id',
+            'test_kind_Id',
+            'show_data',
+            'Year_Id'
+        ],
+
+        include: [
+            {
+                model: Student,
+                attributes: [
+                    'std_fullName'
+                ],
+                include: [
+                    {
+                        model: Religion,
+                        attributes: [
+                            'religion_desc'
+                        ]
+                    },
+                    {
+                        model: Class,
+                        attributes: [
+                            'class_desc'
+                        ]
+                    },
+                    {
+                        model: Gender,
+                        attributes: [
+                            'gender_desc'
+                        ]
+                    }
+                ]
+            },
+
+            {
+                model: Grade,
+                attributes: [
+                    'grade_desc'
+                ]
+            },
+
+            ...degreePhraseIncludes.map(p =>
+                createPhraseInclude(
+                    p.model,
+                    phraseWhere,
+                    p.attributes,
+                    p.required ?? true
+                )
+            ),
+
+            {
+                model: Sort,
+                attributes: [
+                    'sort_desc',
+                    'sort_code'
+                ]
+            }
+        ]
+    });
+
+    return data;
+};
+
+const getOldPrepNumericDegree = async ({
+    DegreeTable,
+    degreeWhere
+}) => {
+
+    const degreeData = await DegreeTable.findOne({
+        where: degreeWhere,
+        include: [
+            {
+                model: Sort,
+                attributes: [
+                    'sort_code',
+                    'sort_desc'
+                ],
+                required: false
+            }
+        ]
+    });
+
+    return degreeData;
+};
+
 
 const getDegree = async (req, res, next) => {
 
     const { stdId, testKindId, yearId } = req.params;
     try {
+
         // =====================================================
         // تحديد السنة الحالية
         // =====================================================
@@ -96,19 +316,10 @@ const getDegree = async (req, res, next) => {
 
         // =====================================================
         // تحديد مصدر البيانات
-        //
-        // بدون yearId
-        //      → Degree
-        //
-        // سنة قديمة
-        //      → DegreeArchive
-        //
-        // السنة الحالية أو المستقبلية
-        //      → Degree
         // =====================================================
-
         let DegreeTable = Degree;
         let isArchive = false;
+
         if (yearId && Number(yearId) > 0) {
 
             const requestedYearId = Number(yearId);
@@ -122,7 +333,6 @@ const getDegree = async (req, res, next) => {
         // =====================================================
         // معلومات الطالب
         // =====================================================
-
         const studentInfo = await Student.findOne({
             where: {
                 student_Id: stdId
@@ -130,87 +340,8 @@ const getDegree = async (req, res, next) => {
             attributes: [
                 'student_Id',
                 'stdCode',
-                'std_fullName'
-            ],
-            raw: true
-        });
-
-        if (!studentInfo) {
-            return res.status(404).json({
-                message: "No Student"
-            });
-        }
-
-        // =====================================================
-        // شروط البحث
-        // =====================================================
-        let degreeWhere = {
-            test_kind_Id: testKindId
-        };
-        if (!isArchive) {
-            // الجدول الحالي
-            degreeWhere.student_Id = stdId;
-        } else {
-            // الأرشيف
-            degreeWhere.stdCode = studentInfo.stdCode;
-            degreeWhere.Year_Id = Number(yearId);
-        }
-
-        // =====================================================
-        // جلب بيانات الدرجة الأساسية
-        // لمعرفة الصف والسنة ونوع النظام
-        // =====================================================
-
-        const degreeInfo = await DegreeTable.findOne({
-            where: degreeWhere,
-            raw: true,
-            attributes: [
-                'student_Id',
-                'grade_Id',
-                'test_kind_Id',
-                'show_data',
-                'Year_Id',
-                'sort_code',
-                'arabic_degre',
-                'dain_degre',
-                'math_degre',
-                'scince_degre',
-                'social_degre',
-                'english_degre',
-                'maharat_degre',
-                'tocnolegy_degre',
-                'general_degre'
-            ]
-        });
-
-        if (!degreeInfo) {
-            return res.status(404).json({
-                message: "No Data"
-            });
-        }
-
-        // =====================================================
-        // تحديد نظام الدرجات من سنة السجل نفسه
-        //
-        // Year_Id < 6  → النظام القديم
-        // Year_Id >= 6 → النظام الجديد
-        // =====================================================
-
-        const isNewDegreeSystem =
-            Number(degreeInfo.Year_Id) >= 6;
-
-        // =====================================================
-        // بيانات الطالب للعرض
-        // =====================================================
-
-        const studentData = await Student.findOne({
-            where: {
-                student_Id: stdId
-            },
-            attributes: [
-                'student_Id',
-                'grade_Id',
-                'std_fullName'
+                'std_fullName',
+                'grade_Id'
             ],
             include: [
                 {
@@ -234,15 +365,79 @@ const getDegree = async (req, res, next) => {
             ]
         });
 
-        if (!studentData) {
+        if (!studentInfo) {
             return res.status(404).json({
-                message: "No Student Data"
+                message: "No Student"
             });
         }
         // =====================================================
-        // اسم الصف
+        // شروط البحث
         // =====================================================
 
+        let degreeWhere = {
+            test_kind_Id: testKindId
+        };
+
+        if (!isArchive) {
+            degreeWhere.student_Id = stdId;
+        } else {
+            degreeWhere.stdCode = studentInfo.stdCode;
+            degreeWhere.Year_Id = Number(yearId);
+        }
+
+        // =====================================================
+        // جلب بيانات الدرجة الأساسية
+        // =====================================================
+        const degreeInfo = await DegreeTable.findOne({
+
+            where: degreeWhere,
+            raw: true,
+            attributes: [
+                'student_Id',
+                'grade_Id',
+                'test_kind_Id',
+                'show_data',
+                'Year_Id',
+                'sort_code',
+                'arabic_degre',
+                'dain_degre',
+                'math_degre',
+                'scince_degre',
+                'social_degre',
+                'english_degre',
+                'maharat_degre',
+                'tocnolegy_degre',
+                'general_degre'
+            ]
+        });
+        if (!degreeInfo) {
+            return res.status(404).json({
+                message: "No Data"
+            });
+        }
+
+        // =====================================================
+        // تحديد نظام الدرجات
+        //
+        // الصفوف 10 و11
+        // → نظام العبارات دائمًا
+        //
+        // الصفوف 1 إلى 6
+        // Year_Id < 6  → نظام العبارات القديم
+        // Year_Id >= 6 → النظام الرقمي الجديد
+        //
+        // الصفوف 7 إلى 9
+        // Year_Id < 6  → النظام الرقمي القديم للإعدادي
+        // Year_Id >= 6 → النظام الرقمي الجديد
+        // =====================================================
+        const isNewDegreeSystem =
+            Number(degreeInfo.grade_Id) >= 1 &&
+            Number(degreeInfo.grade_Id) <= 9 &&
+            Number(degreeInfo.Year_Id) >= 6;
+
+        // =====================================================
+        // اسم الصف
+        // =====================================================
         const gradeData = await Grade.findOne({
             where: {
                 id: degreeInfo.grade_Id
@@ -261,276 +456,95 @@ const getDegree = async (req, res, next) => {
 
         // =====================================================
         // النظام الجديد
-        //
-        // لا نرجع العبارات القديمة
-        // =====================================================
+
         if (isNewDegreeSystem) {
 
-            const degrees = {
-
-                student_Id: degreeInfo.student_Id,
-                grade_Id: degreeInfo.grade_Id,
-                test_kind_Id: degreeInfo.test_kind_Id,
-                show_data: degreeInfo.show_data,
-                Year_Id: degreeInfo.Year_Id,
-
-                // ---------------------------------------------
-                // العربي
-                // ---------------------------------------------
-
-                arabic_degre:
-                    degreeInfo.arabic_degre,
-                arabic_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.arabic_degre
-                    ),
-                arabic_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.arabic_degre
-                    ),
-
-                // ---------------------------------------------
-                // الدين
-                // ---------------------------------------------
-
-                dain_degre:
-                    degreeInfo.dain_degre,
-
-                dain_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.dain_degre
-                    ),
-
-                dain_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.dain_degre
-                    ),
-
-
-                // ---------------------------------------------
-                // الرياضيات
-                // ---------------------------------------------
-
-                math_degre:
-                    degreeInfo.math_degre,
-
-                math_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.math_degre
-                    ),
-
-                math_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.math_degre
-                    ),
-
-
-                // ---------------------------------------------
-                // العلوم
-                // ---------------------------------------------
-
-                scince_degre:
-                    degreeInfo.scince_degre,
-
-                scince_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.scince_degre
-                    ),
-
-                scince_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.scince_degre
-                    ),
-
-
-                // ---------------------------------------------
-                // الدراسات
-                // ---------------------------------------------
-
-                social_degre:
-                    degreeInfo.social_degre,
-
-                social_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.social_degre
-                    ),
-
-                social_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.social_degre
-                    ),
-
-                // ---------------------------------------------
-                // الإنجليزي
-                // ---------------------------------------------
-
-                english_degre:
-                    degreeInfo.english_degre,
-
-                english_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.english_degre
-                    ),
-
-                english_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.english_degre
-                    ),
-
-                // ---------------------------------------------
-                // التكنولوجيا
-                // ---------------------------------------------
-
-                tocnolegy_degre:
-                    degreeInfo.tocnolegy_degre,
-
-                tocnolegy_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.tocnolegy_degre
-                    ),
-
-                tocnolegy_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.tocnolegy_degre
-                    ),
-
-                // ---------------------------------------------
-                // المجموع العام
-                // ---------------------------------------------
-
-                general_degre:
-                    degreeInfo.general_degre,
-
-                general_degre_20:
-                    convertDegreeTo20(
-                        degreeInfo.general_degre
-                    ),
-
-                general_evaluation:
-                    getDegreeEvaluation(
-                        degreeInfo.general_degre
-                    )
-            };
-
+            const degrees = getNewNumericDegrees(degreeInfo);
 
             const result = {
-
-                student_Id: degreeInfo.student_Id,
-
-                grade_Id: degreeInfo.grade_Id,
-
+                student_Id:
+                    degreeInfo.student_Id,
+                grade_Id:
+                    degreeInfo.grade_Id,
                 std_fullName:
-                    studentData.std_fullName,
-
-                grade: gradeData,
-
+                    studentInfo.std_fullName,
+                grade:
+                    gradeData,
                 religion:
-                    studentData.religion,
-
+                    studentInfo.religion,
                 class:
-                    studentData.class,
-
+                    studentInfo.class,
                 gender:
-                    studentData.gender,
-
+                    studentInfo.gender,
                 degrees: [
                     degrees
                 ]
             };
-
 
             return res.status(200).json([
                 result
             ]);
         }
 
+        // =====================================================
+        // الصفوف 7 إلى 9 في السنوات القديمة
+        // النظام القديم الرقمي للإعدادي
+        // =====================================================
 
+        if (
+            Number(degreeInfo.grade_Id) >= 7 &&
+            Number(degreeInfo.grade_Id) <= 9 &&
+            Number(degreeInfo.Year_Id) < 6
+        ) {
+
+            const degreeData = await getOldPrepNumericDegree({
+                DegreeTable,
+                degreeWhere
+            });
+
+            if (!degreeData) {
+                return res.status(404).json({
+                    message: "No Content"
+                });
+            }
+
+            const degree = degreeData.toJSON();
+
+            const result = {
+                student_Id: stdId,
+                grade_Id: degree.grade_Id,
+                std_fullName:
+                    studentInfo.std_fullName,
+                grade:
+                    gradeData,
+                religion:
+                    studentInfo.religion,
+                class:
+                    studentInfo.class,
+                gender:
+                    studentInfo.gender,
+                degrees: [
+                    degree
+                ]
+            };
+
+            return res.status(200).json([
+                result
+            ]);
+        }
         // =====================================================
         // النظام القديم
         //
         // هنا نستخدم العبارات القديمة كما هي
         // =====================================================
 
-        const phraseWhere = {
-            [Op.and]: [
-                {
-                    test_kind_Id: testKindId
-                },
-                {
-                    grade_Id: degreeInfo.grade_Id
-                }
-            ]
-        };
 
-
-        const data = await DegreeTable.findOne({
-
-            where: degreeWhere,
-
-            attributes: [
-                'student_Id',
-                'grade_Id',
-                'test_kind_Id',
-                'show_data',
-                'Year_Id'
-            ],
-
-            include: [
-
-                {
-                    model: Student,
-                    attributes: [
-                        'std_fullName'
-                    ],
-
-                    include: [
-                        {
-                            model: Religion,
-                            attributes: [
-                                'religion_desc'
-                            ]
-                        },
-                        {
-                            model: Class,
-                            attributes: [
-                                'class_desc'
-                            ]
-                        },
-                        {
-                            model: Gender,
-                            attributes: [
-                                'gender_desc'
-                            ]
-                        }
-                    ]
-                },
-
-                {
-                    model: Grade,
-                    attributes: [
-                        'grade_desc'
-                    ]
-                },
-
-                ...degreePhraseIncludes.map(p =>
-                    createPhraseInclude(
-                        p.model,
-                        phraseWhere,
-                        p.attributes,
-                        p.required ?? true
-                    )
-                ),
-
-                {
-                    model: Sort,
-                    attributes: [
-                        'sort_desc',
-                        'sort_code'
-                    ]
-                }
-            ]
+        const data = await getOldDegreeWithPhrases({
+            DegreeTable,
+            degreeWhere,
+            testKindId,
+            gradeId: degreeInfo.grade_Id
         });
-
 
         if (!data) {
             return res.status(404).json({
@@ -538,9 +552,7 @@ const getDegree = async (req, res, next) => {
             });
         }
 
-
         const item = data.toJSON();
-
 
         const {
             student,
@@ -553,27 +565,18 @@ const getDegree = async (req, res, next) => {
             ...phrases
         } = item;
 
-
         const result = {
-
             student_Id,
-
             grade_Id,
-
             std_fullName:
                 student.std_fullName,
-
             grade,
-
             religion:
                 student.religion,
-
             class:
                 student.class,
-
             gender:
                 student.gender,
-
             degrees: [
                 {
                     student_Id,
@@ -586,16 +589,13 @@ const getDegree = async (req, res, next) => {
             ]
         };
 
-
         return res.status(200).json([
             result
         ]);
-
     }
     catch (err) {
 
         console.log("Error", err);
-
         return res.status(500).json({
             message: err.message
         });
@@ -820,7 +820,6 @@ const getMark = async (req, res) => {
 const getDegree_B = async (req, res, next) => {
 
     const { stdId, testKindId, yearId } = req.params;
-
     try {
 
         // =====================================================
@@ -844,7 +843,6 @@ const getDegree_B = async (req, res, next) => {
         }
 
         const currentYearId = currentYear.Year_Id;
-
 
         // =====================================================
         // تحديد مصدر البيانات
@@ -873,7 +871,6 @@ const getDegree_B = async (req, res, next) => {
             }
         }
 
-
         // =====================================================
         // بيانات الطالب
         // =====================================================
@@ -885,7 +882,28 @@ const getDegree_B = async (req, res, next) => {
             attributes: [
                 'student_Id',
                 'stdCode',
-                'std_fullName'
+                'std_fullName',
+                'grade_Id'
+            ],
+            include: [
+                {
+                    model: Religion,
+                    attributes: [
+                        'religion_desc'
+                    ]
+                },
+                {
+                    model: Class,
+                    attributes: [
+                        'class_desc'
+                    ]
+                },
+                {
+                    model: Gender,
+                    attributes: [
+                        'gender_desc'
+                    ]
+                }
             ]
         });
 
@@ -897,7 +915,6 @@ const getDegree_B = async (req, res, next) => {
 
         const stdCode = student.stdCode;
 
-
         // =====================================================
         // تحديد شروط البحث
         // =====================================================
@@ -907,17 +924,13 @@ const getDegree_B = async (req, res, next) => {
         };
 
         if (!isArchive) {
-
             // الجدول الحالي
             degreeWhere.student_Id = stdId;
-
         } else {
-
             // الأرشيف
             degreeWhere.stdCode = stdCode;
             degreeWhere.Year_Id = Number(yearId);
         }
-
 
         // =====================================================
         // جلب الدرجة
@@ -947,7 +960,6 @@ const getDegree_B = async (req, res, next) => {
 
         const degree = degreeData.toJSON();
 
-
         // =====================================================
         // تحديد نظام الدرجات من السنة الموجودة في السجل
         //
@@ -958,158 +970,79 @@ const getDegree_B = async (req, res, next) => {
         const isNewDegreeSystem =
             Number(degree.Year_Id) >= 6;
 
-
         // =====================================================
         // النظام الجديد
         //
-        // الدرجة الأصلية من 15
-        // الدرجة المحولة إلى 20
-        // التقييم حسب النسبة
+        // كل مادة من 15
+        // تتحول إلى 20
+        //
+        // المجموع العام:
+        // الصفوف 4 - 9
+        // 5 مواد × 15 = 75
+        // يتحول إلى 100
         // =====================================================
 
         if (isNewDegreeSystem) {
 
-            degree.arabic_degre_20 =
-                convertDegreeTo20(
-                    degree.arabic_degre
-                );
+            // =================================================
+            // العربي
+            // =================================================
+            degree.arabic_degre_20 = convertDegreeTo20(degree.arabic_degre);
+            degree.arabic_evaluation = getDegreeEvaluation(degree.arabic_degre, 15);
 
-            degree.arabic_evaluation =
-                getDegreeEvaluation(
-                    degree.arabic_degre
-                );
+            // =================================================
+            // الرياضيات
+            // =================================================
+            degree.math_degre_20 = convertDegreeTo20(degree.math_degre);
+            degree.math_evaluation = getDegreeEvaluation(degree.math_degre, 15);
 
+            // =================================================
+            // العلوم
+            // =================================================
+            degree.scince_degre_20 = convertDegreeTo20(degree.scince_degre);
+            degree.scince_evaluation = getDegreeEvaluation(degree.scince_degre, 15);
 
-            degree.dain_degre_20 =
-                convertDegreeTo20(
-                    degree.dain_degre
-                );
+            // =================================================
+            // الدراسات
+            // =================================================
 
-            degree.dain_evaluation =
-                getDegreeEvaluation(
-                    degree.dain_degre
-                );
+            degree.social_degre_20 = convertDegreeTo20(degree.social_degre);
+            degree.social_evaluation = getDegreeEvaluation(degree.social_degre, 15);
 
+            // =================================================
+            // الإنجليزي
+            // =================================================
+            degree.english_degre_20 = convertDegreeTo20(degree.english_degre);
+            degree.english_evaluation = getDegreeEvaluation(degree.english_degre, 15);
 
-            degree.math_degre_20 =
-                convertDegreeTo20(
-                    degree.math_degre
-                );
+            // =================================================
+            // المجموع العام
+            // 4 - 9  : 75 → 100
+            // =================================================
+            const generalEvaluation = getDegreeEvaluation(degree.general_degre, 75);
+            degree.general_degre_20 = generalEvaluation.degree_20;
+            degree.general_evaluation = generalEvaluation;
 
-            degree.math_evaluation =
-                getDegreeEvaluation(
-                    degree.math_degre
-                );
+            // =================================================
+            // الدين
+            // =================================================
+            degree.dain_degre_20 = convertDegreeTo20(degree.dain_degre);
+            degree.dain_evaluation = getDegreeEvaluation(degree.dain_degre, 15);
 
+            // =================================================
+            // المهارات
+            // =================================================
+            degree.maharat_degre_20 = convertDegreeTo20(degree.maharat_degre);
+            degree.maharat_evaluation = getDegreeEvaluation(degree.maharat_degre, 15);
 
-            degree.scince_degre_20 =
-                convertDegreeTo20(
-                    degree.scince_degre
-                );
-
-            degree.scince_evaluation =
-                getDegreeEvaluation(
-                    degree.scince_degre
-                );
-
-
-            degree.social_degre_20 =
-                convertDegreeTo20(
-                    degree.social_degre
-                );
-
-            degree.social_evaluation =
-                getDegreeEvaluation(
-                    degree.social_degre
-                );
-
-
-            degree.english_degre_20 =
-                convertDegreeTo20(
-                    degree.english_degre
-                );
-
-            degree.english_evaluation =
-                getDegreeEvaluation(
-                    degree.english_degre
-                );
+            // =================================================
+            // التكنولوجيا
+            // =================================================
+            degree.tocnolegy_degre_20 = convertDegreeTo20(degree.tocnolegy_degre);
+            degree.tocnolegy_evaluation = getDegreeEvaluation(degree.tocnolegy_degre, 15);
 
 
-            degree.maharat_degre_20 =
-                convertDegreeTo20(
-                    degree.maharat_degre
-                );
-
-            degree.maharat_evaluation =
-                getDegreeEvaluation(
-                    degree.maharat_degre
-                );
-
-
-            degree.tocnolegy_degre_20 =
-                convertDegreeTo20(
-                    degree.tocnolegy_degre
-                );
-
-            degree.tocnolegy_evaluation =
-                getDegreeEvaluation(
-                    degree.tocnolegy_degre
-                );
-
-
-            degree.general_degre_20 =
-                convertDegreeTo20(
-                    degree.general_degre
-                );
-
-            degree.general_evaluation =
-                getDegreeEvaluation(
-                    degree.general_degre
-                );
         }
-
-
-        // =====================================================
-        // بيانات الطالب الحالية للعرض
-        // =====================================================
-
-        const studentData = await Student.findOne({
-            where: {
-                student_Id: stdId
-            },
-            attributes: [
-                'student_Id',
-                'grade_Id',
-                'std_fullName'
-            ],
-            include: [
-                {
-                    model: Religion,
-                    attributes: [
-                        'religion_desc'
-                    ]
-                },
-                {
-                    model: Class,
-                    attributes: [
-                        'class_desc'
-                    ]
-                },
-                {
-                    model: Gender,
-                    attributes: [
-                        'gender_desc'
-                    ]
-                }
-            ]
-        });
-
-        if (!studentData) {
-            return res.status(404).json({
-                message: "No Student Data"
-            });
-        }
-
 
         // =====================================================
         // بيانات الصف
@@ -1137,36 +1070,25 @@ const getDegree_B = async (req, res, next) => {
         // =====================================================
 
         const result = {
-
             student_Id: stdId,
-
             grade_Id: degree.grade_Id,
-
             std_fullName:
-                studentData.std_fullName,
-
+                student.std_fullName,
             grade:
                 gradeData,
-
             religion:
-                studentData.religion,
-
+                student.religion,
             class:
-                studentData.class,
-
+                student.class,
             gender:
-                studentData.gender,
-
+                student.gender,
             degrees: [
                 degree
             ]
         };
-
-
         return res.status(200).json([
             result
         ]);
-
     }
     catch (err) {
 
@@ -1177,6 +1099,7 @@ const getDegree_B = async (req, res, next) => {
         });
     }
 };
+
 
 module.exports = {
     getDegree,
