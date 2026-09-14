@@ -8,23 +8,23 @@ const fs = require("fs");
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
 
-const delFile = async (path)=>{
+const delFile = async (path) => {
   // Delete the file like normal
   await unlinkAsync(path)
- 
-} ;
+
+};
 
 
 
 const upload_student = async (req, res) => {
-  
+
   try {
     if (req.file == undefined) {
       return res.status(400).send("Please upload an excel file!")
     }
     let fullPath = __basedir + "/resources/static/assets/excelFiles/"
     let path =
-    fullPath + req.file.filename;
+      fullPath + req.file.filename;
     readXlsxFile(path).then((rows) => {
       // skip header
       rows.shift();
@@ -32,19 +32,19 @@ const upload_student = async (req, res) => {
 
       rows.forEach((row) => {
 
-        
+
         // Student
-     
+
         let student = {
           student_Id: row[0],
           gender_Id: row[1],
           class_Id: row[2],
-          grade_Id: row[3], 
+          grade_Id: row[3],
           religion_Id: row[4],
           createdAt: new Date(),
           updatedAt: new Date(),
-        }; 
-        
+        };
+
         students.push(student);
       });
       Student.bulkCreate(students)
@@ -60,33 +60,33 @@ const upload_student = async (req, res) => {
           });
           console.log(error);
         })
-  }).then(async ()=>{
-     // Delete the file like normal
-     await unlinkAsync(path)
-  })
- 
+    }).then(async () => {
+      // Delete the file like normal
+      await unlinkAsync(path)
+    })
+
   }
-   catch (error) {
+  catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Could not upload the file: " + req.file.filename,
-    }).then(async ()=>{
+    }).then(async () => {
       // Delete the file like normal
       await unlinkAsync(path)
-   })
+    })
   }
 };
 
 
 const upload_degree = async (req, res) => {
-  
+
   try {
     if (req.file == undefined) {
       return res.status(400).send("Please upload an excel file!")
     }
     let fullPath = __basedir + "/resources/static/assets/excelFiles/"
     let path =
-    fullPath + req.file.filename;
+      fullPath + req.file.filename;
 
     readXlsxFile(path).then((rows) => {
       // skip header
@@ -98,7 +98,7 @@ const upload_degree = async (req, res) => {
 
       rows.forEach((row) => {
 
-        
+
         let degree = {
           student_Id: row[3],
           arabic_degre: row[4],
@@ -111,19 +111,38 @@ const upload_degree = async (req, res) => {
           tocnolegy_degre: row[11],
           badania_degre: row[12],
           general_degre: row[13],
-          sort_code: row[20],
+          sort_code: row[21],
           test_kind_Id: row[15],
           grade_Id: row[16],
           french_degre: row[17],
-          show_data: row[19],
+          Year_Id: row[19],
+          show_data: row[20],
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-      
+
 
         degrees.push(degree);
       });
-      Degree.bulkCreate(degrees)
+      Degree.bulkCreate(degrees, {
+        updateOnDuplicate: [
+          "arabic_degre",
+          "dain_degre",
+          "math_degre",
+          "scince_degre",
+          "social_degre",
+          "english_degre",
+          "maharat_degre",
+          "tocnolegy_degre",
+          "badania_degre",
+          "general_degre",
+          "sort_code",
+          "french_degre",
+          "Year_Id",
+          "show_data",
+          "updatedAt"
+        ]
+      })
         .then(() => {
           res.status(200).send({
             message: "Uploaded the file successfully: " + req.file.filename,
@@ -136,33 +155,33 @@ const upload_degree = async (req, res) => {
           });
           console.log(error);
         })
-  }).then(async ()=>{
-     // Delete the file like normal
-     await unlinkAsync(path)
-  })
- 
+    }).then(async () => {
+      // Delete the file like normal
+      await unlinkAsync(path)
+    })
+
   }
-   catch (error) {
+  catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Could not upload the file: " + req.file.filename,
-    }).then(async ()=>{
+    }).then(async () => {
       // Delete the file like normal
       await unlinkAsync(path)
-   })
+    })
   }
 };
 
 
 const upload_mark = async (req, res) => {
-  
+
   try {
     if (req.file == undefined) {
       return res.status(400).send("Please upload an excel file!")
     }
     let fullPath = __basedir + "/resources/static/assets/excelFiles/"
     let path =
-    fullPath + req.file.filename;
+      fullPath + req.file.filename;
 
     readXlsxFile(path).then((rows) => {
       // skip header
@@ -174,7 +193,7 @@ const upload_mark = async (req, res) => {
 
       rows.forEach((row) => {
 
-        
+
         let mark = {
           student_Id: row[3],
           arabic_degre: row[4],
@@ -190,16 +209,35 @@ const upload_mark = async (req, res) => {
           sort_code: row[14],
           test_kind_Id: row[15],
           grade_Id: row[16],
-          show_data: row[19],
+          Year_Id: row[19],
+          show_data: row[20],
           french_degre: row[17],
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-      
+
 
         marks.push(mark);
       });
-      Mark.bulkCreate(marks)
+      Mark.bulkCreate(marks, {
+        updateOnDuplicate: [
+          "arabic_degre",
+          "dain_degre",
+          "math_degre",
+          "scince_degre",
+          "social_degre",
+          "english_degre",
+          "maharat_degre",
+          "tocnolegy_degre",
+          "badania_degre",
+          "general_degre",
+          "sort_code",
+          "french_degre",
+          "Year_Id",
+          "show_data",
+          "updatedAt"
+        ]
+      })
         .then(() => {
           res.status(200).send({
             message: "Uploaded the file successfully: " + req.file.filename,
@@ -212,33 +250,33 @@ const upload_mark = async (req, res) => {
           });
           console.log(error);
         })
-  }).then(async ()=>{
-     // Delete the file like normal
-     await unlinkAsync(path)
-  })
- 
+    }).then(async () => {
+      // Delete the file like normal
+      await unlinkAsync(path)
+    })
+
   }
-   catch (error) {
+  catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Could not upload the file: " + req.file.filename,
-    }).then(async ()=>{
+    }).then(async () => {
       // Delete the file like normal
       await unlinkAsync(path)
-   })
+    })
   }
 };
 
 
 const upload_mark2 = async (req, res) => {
-  
+
   try {
     if (req.file == undefined) {
       return res.status(400).send("Please upload an excel file!")
     }
     let fullPath = __basedir + "/resources/static/assets/excelFiles/"
     let path =
-    fullPath + req.file.filename;
+      fullPath + req.file.filename;
 
     readXlsxFile(path).then((rows) => {
       // skip header
@@ -250,7 +288,7 @@ const upload_mark2 = async (req, res) => {
 
       rows.forEach((row) => {
 
-        
+
         let mark = {
           student_Id: row[3],
           arabic_degre: row[4],
@@ -270,7 +308,7 @@ const upload_mark2 = async (req, res) => {
           createdAt: new Date(),
           updatedAt: new Date(),
         };
-      
+
 
         marks.push(mark);
       });
@@ -287,32 +325,32 @@ const upload_mark2 = async (req, res) => {
           });
           console.log(error);
         })
-  }).then(async ()=>{
-     // Delete the file like normal
-     await unlinkAsync(path)
-  })
- 
+    }).then(async () => {
+      // Delete the file like normal
+      await unlinkAsync(path)
+    })
+
   }
-   catch (error) {
+  catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Could not upload the file: " + req.file.originalname,
-    }).then(async ()=>{
+    }).then(async () => {
       // Delete the file like normal
       await unlinkAsync(path)
-   })
+    })
   }
 };
 
 const upload_phrase = async (req, res) => {
-  
+
   try {
     if (req.file == undefined) {
       return res.status(400).send("Please upload an excel file!")
     }
     let fullPath = __basedir + "/resources/static/assets/excelFiles/"
     let path =
-    fullPath + req.file.filename;
+      fullPath + req.file.filename;
 
     readXlsxFile(path).then((rows) => {
       // skip header
@@ -321,14 +359,14 @@ const upload_phrase = async (req, res) => {
 
       rows.forEach((row) => {
 
-        
+
         let phrase = {
           general_desc: row[0],
           general_degre: row[1],
           test_kind_Id: row[2],
           grade_Id: row[3],
         };
-      
+
 
         phrases.push(phrase);
       });
@@ -345,30 +383,30 @@ const upload_phrase = async (req, res) => {
           });
           console.log(error);
         })
-  }).then(async ()=>{
-     // Delete the file like normal
-     await unlinkAsync(path)
-  })
- 
+    }).then(async () => {
+      // Delete the file like normal
+      await unlinkAsync(path)
+    })
+
   }
-   catch (error) {
+  catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Could not upload the file: " + req.file.filename,
-    }).then(async ()=>{
+    }).then(async () => {
       // Delete the file like normal
       await unlinkAsync(path)
-   })
+    })
   }
 };
 
 
- /* let phrase = {
-          tocnolegy_desc: row[0],
-          tocnolegy_degre: row[1],
-            test_kind_Id: row[2],
-            grade_Id: row[3],
-        }; */
+/* let phrase = {
+         tocnolegy_desc: row[0],
+         tocnolegy_degre: row[1],
+           test_kind_Id: row[2],
+           grade_Id: row[3],
+       }; */
 
 const getTArabic = (req, res) => {
   Student.findAll()
@@ -383,18 +421,19 @@ const getTArabic = (req, res) => {
     });
 };
 
-const getUsers= async (req,res)=>{
-  try{
+const getUsers = async (req, res) => {
+  try {
     const student = await Student.destroy(
-      {where:{grade_Id:3},
-    })
+      {
+        where: { grade_Id: 3 },
+      })
     res.status(200).json(student)
-  }catch(err){
+  } catch (err) {
     res.status(500).json({ message: err })
     console.log("Error", err)
   }
 
-      
+
 }
 
 module.exports = {
