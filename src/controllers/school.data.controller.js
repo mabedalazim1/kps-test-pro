@@ -175,7 +175,11 @@ const getNewNumericDegrees = (degreeInfo) => {
 
         maharat_degre: degreeInfo.maharat_degre,
         maharat_degre_20: convertDegreeTo20(degreeInfo.maharat_degre),
-        maharat_evaluation: getDegreeEvaluation(degreeInfo.maharat_degre, 15)
+        maharat_evaluation: getDegreeEvaluation(degreeInfo.maharat_degre, 15),
+
+        badania_degre: degreeInfo.badania_degre,
+        badania_degre_20: convertDegreeTo20(degreeInfo.badania_degre),
+        badania_evaluation: getDegreeEvaluation(degreeInfo.badania_degre, 15)
     };
 };
 
@@ -407,6 +411,7 @@ const getDegree = async (req, res, next) => {
                 'english_degre',
                 'maharat_degre',
                 'tocnolegy_degre',
+                'badania_degre',
                 'general_degre'
             ]
         });

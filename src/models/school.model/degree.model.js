@@ -5,39 +5,39 @@ module.exports = (db, type) => {
             allowNull: false,
         },
         arabic_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         dain_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         math_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         scince_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         social_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
         },
         english_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         maharat_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
         },
         tocnolegy_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
         },
         badania_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
         },
         general_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             allowNull: false,
         },
         sort_code: {
@@ -52,7 +52,7 @@ module.exports = (db, type) => {
             allowNull: false,
         },
         french_degre: {
-            type: type.INTEGER,
+            type: type.DECIMAL(5, 2),
             defaultValue: 0,
         },
         show_data: {

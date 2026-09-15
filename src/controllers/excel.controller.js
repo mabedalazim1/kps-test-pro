@@ -80,190 +80,183 @@ const upload_student = async (req, res) => {
 
 const upload_degree = async (req, res) => {
 
+  let path;
+
   try {
+
     if (req.file == undefined) {
-      return res.status(400).send("Please upload an excel file!")
+      return res.status(400).send("Please upload an excel file!");
     }
-    let fullPath = __basedir + "/resources/static/assets/excelFiles/"
-    let path =
-      fullPath + req.file.filename;
 
-    readXlsxFile(path).then((rows) => {
-      // skip header
-      rows.shift();
-      rows.shift();
-      rows.shift();
-      rows.shift();
-      let degrees = [];
+    const fullPath =
+      __basedir + "/resources/static/assets/excelFiles/";
 
-      rows.forEach((row) => {
+    path = fullPath + req.file.filename;
 
+    const rows = await readXlsxFile(path);
 
-        let degree = {
-          student_Id: row[3],
-          arabic_degre: row[4],
-          dain_degre: row[5],
-          math_degre: row[6],
-          scince_degre: row[7],
-          social_degre: row[8],
-          english_degre: row[9],
-          maharat_degre: row[10],
-          tocnolegy_degre: row[11],
-          badania_degre: row[12],
-          general_degre: row[13],
-          sort_code: row[21],
-          test_kind_Id: row[15],
-          grade_Id: row[16],
-          french_degre: row[17],
-          Year_Id: row[19],
-          show_data: row[20],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+    // skip header
+    rows.shift();
+    rows.shift();
+    rows.shift();
+    rows.shift();
 
+    const degrees = [];
 
-        degrees.push(degree);
-      });
-      Degree.bulkCreate(degrees, {
-        updateOnDuplicate: [
-          "arabic_degre",
-          "dain_degre",
-          "math_degre",
-          "scince_degre",
-          "social_degre",
-          "english_degre",
-          "maharat_degre",
-          "tocnolegy_degre",
-          "badania_degre",
-          "general_degre",
-          "sort_code",
-          "french_degre",
-          "Year_Id",
-          "show_data",
-          "updatedAt"
-        ]
-      })
-        .then(() => {
-          res.status(200).send({
-            message: "Uploaded the file successfully: " + req.file.filename,
-          });
-        })
-        .catch((error) => {
-          res.status(500).send({
-            message: "Fail to import data into database!",
-            error: error.message,
-          });
-          console.log(error);
-        })
-    }).then(async () => {
-      // Delete the file like normal
-      await unlinkAsync(path)
-    })
+    rows.forEach((row) => {
 
-  }
-  catch (error) {
+      const degree = {
+        student_Id: row[3],
+
+        arabic_degre: row[4],
+        dain_degre: row[5],
+        math_degre: row[6],
+        scince_degre: row[7],
+        social_degre: row[8],
+        english_degre: row[9],
+        maharat_degre: row[10],
+        tocnolegy_degre: row[11],
+        badania_degre: row[12],
+        general_degre: row[13],
+
+        sort_code: row[14],
+
+        test_kind_Id: row[15],
+        grade_Id: row[16],
+        french_degre: row[17],
+
+        Year_Id: row[19],
+        show_data: row[20],
+
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      degrees.push(degree);
+    });
+
+    await Degree.bulkCreate(degrees);
+
+    // حذف الملف بعد نجاح الإدخال
+    await unlinkAsync(path);
+
+    return res.status(200).send({
+      message:
+        "Uploaded the file successfully: " +
+        req.file.filename,
+    });
+
+  } catch (error) {
+
     console.log(error);
-    res.status(500).send({
-      message: "Could not upload the file: " + req.file.filename,
-    }).then(async () => {
-      // Delete the file like normal
-      await unlinkAsync(path)
-    })
+
+    if (path) {
+      try {
+        await unlinkAsync(path);
+      } catch (deleteError) {
+        console.log(
+          "Could not delete uploaded file:",
+          deleteError
+        );
+      }
+    }
+
+    return res.status(500).send({
+      message: "Fail to import data into database!",
+      error: error.message,
+    });
   }
 };
 
 
+
 const upload_mark = async (req, res) => {
 
+  let path;
+
   try {
+
     if (req.file == undefined) {
-      return res.status(400).send("Please upload an excel file!")
+      return res.status(400).send("Please upload an excel file!");
     }
-    let fullPath = __basedir + "/resources/static/assets/excelFiles/"
-    let path =
-      fullPath + req.file.filename;
 
-    readXlsxFile(path).then((rows) => {
-      // skip header
-      rows.shift();
-      rows.shift();
-      rows.shift();
-      rows.shift();
-      let marks = [];
+    const fullPath =
+      __basedir + "/resources/static/assets/excelFiles/";
 
-      rows.forEach((row) => {
+    path = fullPath + req.file.filename;
 
+    const rows = await readXlsxFile(path);
 
-        let mark = {
-          student_Id: row[3],
-          arabic_degre: row[4],
-          dain_degre: row[5],
-          math_degre: row[6],
-          scince_degre: row[7],
-          social_degre: row[8],
-          english_degre: row[9],
-          maharat_degre: row[10],
-          tocnolegy_degre: row[11],
-          badania_degre: row[12],
-          general_degre: row[13],
-          sort_code: row[14],
-          test_kind_Id: row[15],
-          grade_Id: row[16],
-          Year_Id: row[19],
-          show_data: row[20],
-          french_degre: row[17],
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+    // skip header
+    rows.shift();
+    rows.shift();
+    rows.shift();
+    rows.shift();
 
+    const marks = [];
 
-        marks.push(mark);
-      });
-      Mark.bulkCreate(marks, {
-        updateOnDuplicate: [
-          "arabic_degre",
-          "dain_degre",
-          "math_degre",
-          "scince_degre",
-          "social_degre",
-          "english_degre",
-          "maharat_degre",
-          "tocnolegy_degre",
-          "badania_degre",
-          "general_degre",
-          "sort_code",
-          "french_degre",
-          "Year_Id",
-          "show_data",
-          "updatedAt"
-        ]
-      })
-        .then(() => {
-          res.status(200).send({
-            message: "Uploaded the file successfully: " + req.file.filename,
-          });
-        })
-        .catch((error) => {
-          res.status(500).send({
-            message: "Fail to import data into database!",
-            error: error.message,
-          });
-          console.log(error);
-        })
-    }).then(async () => {
-      // Delete the file like normal
-      await unlinkAsync(path)
-    })
+    rows.forEach((row) => {
 
-  }
-  catch (error) {
+      const mark = {
+        student_Id: row[3],
+
+        arabic_degre: row[4],
+        dain_degre: row[5],
+        math_degre: row[6],
+        scince_degre: row[7],
+        social_degre: row[8],
+        english_degre: row[9],
+        maharat_degre: row[10],
+        tocnolegy_degre: row[11],
+        badania_degre: row[12],
+        general_degre: row[13],
+
+        sort_code: row[14],
+
+        test_kind_Id: row[15],
+        grade_Id: row[16],
+        french_degre: row[17],
+
+        Year_Id: row[19],
+        show_data: row[20],
+
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      marks.push(mark);
+    });
+
+    await Mark.bulkCreate(marks);
+
+    // حذف الملف بعد نجاح الإدخال
+    await unlinkAsync(path);
+
+    return res.status(200).send({
+      message:
+        "Uploaded the file successfully: " +
+        req.file.filename,
+    });
+
+  } catch (error) {
+
     console.log(error);
-    res.status(500).send({
-      message: "Could not upload the file: " + req.file.filename,
-    }).then(async () => {
-      // Delete the file like normal
-      await unlinkAsync(path)
-    })
+
+    if (path) {
+      try {
+        await unlinkAsync(path);
+      } catch (deleteError) {
+        console.log(
+          "Could not delete uploaded file:",
+          deleteError
+        );
+      }
+    }
+
+    return res.status(500).send({
+      message: "Fail to import data into database!",
+      error: error.message,
+    });
   }
 };
 
